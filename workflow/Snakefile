@@ -1,0 +1,60 @@
+import anndata as ad
+import celloracle as co
+
+
+def all_factors():
+    adata = ad.read_h5ad("resources/all_cells.h5ad", backed="r")
+    base_GRN = co.data.load_mouse_scATAC_atlas_base_GRN()
+    factor_list = base_GRN.columns.to_list()
+    factor_list.append("Zbtb46")  # Zbtb46 target genes - added from PMID: 22851594
+    factor_list = [col for col in factor_list if col in adata.var_names]
+    return factor_list
+
+
+factor_list = all_factors()
+
+
+rule all:
+    input:
+        expand(
+            "results/simulations/{factor}/perturb_scores.parquet", factor=factor_list
+        ),
+
+
+rule prepare_oracle:
+    input:
+        "resources/all_cells.h5ad",
+    output:
+        "results/all_cells.celloracle.oracle",
+    params:
+        zbtb46_targets="resources/supp_jem.20121003_JEM_20121003_TableS1.xlsx",
+    script:
+        "scripts/prepare_oracle.py"
+
+
+rule prepare_gradient:
+    input:
+        "results/all_cells.celloracle.oracle",
+    output:
+        "results/all_cells.celloracle.gradient",
+    params:
+        n_grid=60,
+        min_mass=8,
+    script:
+        "scripts/prepare_gradient.py"
+
+
+rule run_simulation:
+    input:
+        oracle="results/all_cells.celloracle.oracle",
+        gradient="results/all_cells.celloracle.gradient",
+    output:
+        perturb_scores="results/simulations/{factor}/perturb_scores.parquet",
+        mc_counts="results/simulations/{factor}/mc_counts.parquet",
+        mc_transitions="results/simulations/{factor}/mc_transitions.parquet",
+    params:
+        n_grid=60,
+        min_mass=8,
+    threads: 4
+    script:
+        "scripts/run_simulation.py"

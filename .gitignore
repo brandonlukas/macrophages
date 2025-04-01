@@ -1,0 +1,6 @@
+.snakemake
+results/
+resources/*.h5ad
+resources/*.rds
+test*
+upload_*
