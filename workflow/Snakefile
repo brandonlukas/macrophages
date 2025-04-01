@@ -16,9 +16,18 @@ factor_list = all_factors()
 
 rule all:
     input:
-        expand(
-            "results/simulations/{factor}/perturb_scores.parquet", factor=factor_list
-        ),
+        "results/all_cells.metadata.parquet",
+        "results/all_cells.perturb_scores.parquet",
+        "results/all_cells.mc_transitions.500.parquet",
+
+
+rule extract_metadata:
+    input:
+        "resources/all_cells.h5ad",
+    output:
+        "results/all_cells.metadata.parquet",
+    script:
+        "scripts/extract_metadata.py"
 
 
 rule prepare_oracle:
@@ -58,3 +67,31 @@ rule run_simulation:
     threads: 4
     script:
         "scripts/run_simulation.py"
+
+
+rule aggregate_perturb_scores:
+    input:
+        expand(
+            "results/simulations/{factor}/perturb_scores.parquet", factor=factor_list
+        ),
+    output:
+        "results/all_cells.perturb_scores.parquet",
+    params:
+        factor_list=factor_list,
+    script:
+        "scripts/aggregate_perturb_scores.py"
+
+
+rule aggregate_mc_transitions:
+    input:
+        metadata="results/all_cells.metadata.parquet",
+        mc_transitions=expand(
+            "results/simulations/{factor}/mc_transitions.parquet",
+            factor=factor_list,
+        ),
+    output:
+        "results/all_cells.mc_transitions.{step}.parquet",
+    params:
+        factor_list=factor_list,
+    script:
+        "scripts/aggregate_mc_transitions.py"
