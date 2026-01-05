@@ -1,0 +1,8 @@
+__pycache__/
+.snakemake/
+downloads/
+inputs/
+resources/scenic_resources/
+resources/all_cells.rds
+results/
+upload_box.sh

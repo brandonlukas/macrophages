@@ -1,0 +1,64 @@
+configfile: "config/config.yaml"
+
+
+def get_atlas_factors():
+    import pandas as pd
+
+    filepath = config["resources"]["atlas_factors"]
+    df = pd.read_csv(
+        filepath,
+        sep="\t",
+        names=["Antigen", "CellType", "Recorded", "Genome"],
+    ).query("CellType.str.contains('Blood') & Recorded == '+' & Genome == 'mm10'")
+
+    atlas_factors = df["Antigen"].unique().tolist()
+    return atlas_factors
+
+
+def get_factor_list():
+    import pandas as pd
+
+    ignore_factors = ["Ahr", "Gps2"]
+
+    df = pd.read_csv("results/bitfam/network/pruned.csv")  # assumes file exists... oops
+    factor_list = df["source"].unique().tolist()
+    factor_list = [f for f in factor_list if f not in ignore_factors]
+    return factor_list
+
+
+atlas_factors = get_atlas_factors()
+factor_list = get_factor_list()
+
+
+include: "rules/bitfam.smk"
+include: "rules/lamian.smk"
+include: "rules/celloracle.smk"
+include: "rules/seurat.smk"
+include: "rules/pgd_celloracle.smk"
+
+
+rule all:
+    input:
+        rules.evaluate_uncertainty.output,
+        rules.prepare_cells.output,
+        rules.findallmarkers.output,
+        rules.findallmarkers_z.output,
+        rules.find_de.output,
+        rules.find_de_z.output,
+        rules.perform_tde.output,
+        rules.perform_xde.output,
+        rules.perform_tde_z.output,
+        rules.perform_xde_z.output,
+        expand(rules.extract_acts_runs.output, run=[1, 2, 3]),
+        rules.rds_to_hdf5.output,
+        rules.prepare_oracle.output,
+        rules.prepare_gradient.output,
+        rules.aggregate_perturb_scores.output,
+        expand(rules.aggregate_mc_transitions.output, step=[0, 500]),
+        rules.aggregate_perturb_scores_overexpress.output,
+        expand(rules.aggregate_mc_transitions_overexpress.output, step=[0, 500]),
+        rules.aggregate_acts.output,
+        rules.pgd_aggregate_perturb_scores.output,
+        rules.pgd_aggregate_perturb_scores_overexpress.output,
+        expand(rules.pgd_aggregate_mc_transitions.output, step=[0, 500]),
+        expand(rules.pgd_aggregate_mc_transitions_overexpress.output, step=[0, 500]),

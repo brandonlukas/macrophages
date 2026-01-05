@@ -1,0 +1,16 @@
+inputs:
+  cells: inputs/cells.rds
+
+resources:
+  atlas_factors: resources/analysisList.tab
+  zbtb46: resources/supp_jem.20121003_JEM_20121003_TableS1.xlsx
+
+params:
+  bitfam:
+    network:
+      whitelist_regex: "(?i)dendritic|macrophage|monocyte"
+  
+  celloracle:
+    conda_env: "celloracle_env"
+    n_grid: 60
+    min_mass: 8
