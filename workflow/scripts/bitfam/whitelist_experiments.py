@@ -4,7 +4,20 @@ For each ChIP-seq experiment that survived the mono/mac/DC whitelist filter and
 is present in the BITFAM input network, resolve:
 
     factor, srx, gsm, gse, cell_type, sample_title, n_targets,
-    study_title, pmid, doi, paper_title, authors, journal, year
+    study_title, pmid, n_pmids, all_pmids,
+    doi, paper_title, authors, journal, year
+
+Each row is a (factor, SRX, cell_type) triple. Publication fields (pmid, doi,
+paper_title, authors, journal, year) describe the *chosen* paper for the GSE:
+GEO's first linked PMID when present, otherwise a Europe PMC search hit on the
+GSE accession. NCBI does not document the order of GEO's PubMedIds list, so
+"first" is not principled — n_pmids and all_pmids preserve the full set so
+multi-publication GSEs can be audited.
+
+Columns:
+    n_pmids   - count of PubMed IDs GEO links to this GSE (0 when the EPMC
+                fallback supplied the publication, or no paper was found)
+    all_pmids - ";"-separated list of all GEO-linked PMIDs
 
 Hops:
     SRX  -> GSM            (NCBI SRA efetch runinfo)
@@ -17,8 +30,6 @@ Hops:
 All NCBI/EuropePMC results are cached as JSON under params.cache_dir so reruns
 are offline joins.
 """
-
-from __future__ import annotations
 
 import ast
 import json
@@ -198,6 +209,7 @@ def whitelist_experiments(input_csv: str, output_tsv: str, cache_dir: str) -> No
     cache.mkdir(parents=True, exist_ok=True)
 
     df = pd.read_csv(input_csv, usecols=["source", "target", "evidence"])
+    df = df[df["evidence"].str.startswith("[")]
     df["evidence"] = df["evidence"].apply(ast.literal_eval)
     exp = df.explode("evidence")
     exp[["srx", "cell_type"]] = exp["evidence"].str.split("|", n=1, expand=True)
@@ -232,7 +244,12 @@ def whitelist_experiments(input_csv: str, output_tsv: str, cache_dir: str) -> No
     epmc_dirty = False
     gse_pub: dict[str, dict] = {}
     for acc, meta in gse_by_acc.items():
-        record = {"pmid": "", **{k: "" for k in PUB_KEYS}}
+        record = {
+            "pmid": "",
+            "n_pmids": len(meta["pmids"]),
+            "all_pmids": ";".join(meta["pmids"]),
+            **{k: "" for k in PUB_KEYS},
+        }
         if meta["pmids"]:
             record["pmid"] = meta["pmids"][0]
         else:
@@ -274,6 +291,8 @@ def whitelist_experiments(input_csv: str, output_tsv: str, cache_dir: str) -> No
                 "n_targets": r.n_targets,
                 "study_title": meta.get("title", ""),
                 "pmid": pub.get("pmid", ""),
+                "n_pmids": pub.get("n_pmids", 0),
+                "all_pmids": pub.get("all_pmids", ""),
                 "doi": pub.get("doi", ""),
                 "paper_title": pub.get("paper_title", ""),
                 "authors": pub.get("authors", ""),
