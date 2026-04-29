@@ -22,6 +22,19 @@ A Snakemake pipeline to build and interrogate macrophage / dendritic cell transc
    snakemake -s workflow/Snakefile -j 8
    ```
 
+### Optional: NCBI API key
+The `whitelist_experiments` rule queries NCBI E-utilities to resolve each whitelisted ChIP-seq experiment to its publication. NCBI rate-limits anonymous traffic to 3 req/s; an API key lifts this to 10 req/s and roughly cuts the runtime of that rule from ~10 min to ~3 min. The key is free and active immediately:
+
+1. Sign in at [account.ncbi.nlm.nih.gov](https://account.ncbi.nlm.nih.gov/) (creating an account is free; Google/ORCID/etc. SSO works).
+2. Click your username (top right) → **Account Settings**.
+3. Scroll to **API Key Management** → **Create an API Key** and copy the hex string.
+4. Export it before running Snakemake:
+   ```bash
+   export NCBI_API_KEY="your-hex-key-here"
+   ```
+
+The script reads this env var automatically; no code changes needed.
+
 ## Key outputs
 - `results/bitfam/network/` and `results/bitfam/results/`: network files and activity estimates.
 - `results/lamian/`: pseudotime, uncertainty, and differential tests.

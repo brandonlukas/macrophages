@@ -64,6 +64,17 @@ rule pruned_network:
         "../scripts/bitfam/pruned_network.R"
 
 
+rule whitelist_experiments:
+    input:
+        rules.pruned_network.output,
+    output:
+        "results/bitfam/network/whitelist_experiments.tsv",
+    params:
+        cache_dir="results/bitfam/network/whitelist_experiments_cache",
+    script:
+        "../scripts/bitfam/whitelist_experiments.py"
+
+
 rule run_bitfam:
     input:
         cells=config["inputs"]["cells"],
