@@ -1,0 +1,1557 @@
+[Yang Dai] 12:10:03
+And what is the time point it is, uh…
+
+[Yang Dai] 12:10:06
+you know, mentioning here.
+
+[Yang Dai] 12:10:08
+It's the microphone for models.
+
+[Yang Dai] 12:10:11
+You know, we round a few rounds, I think.
+
+[Timothy Koh] 12:10:12
+You know…
+
+[Yang Dai] 12:10:14
+It's like a predicted a few points. I don't know what…
+
+[Yang Dai] 12:10:17
+I'm not so sure if it's a…
+
+[Timothy Koh] 12:10:19
+My… my…
+
+[Timothy Koh] 12:10:22
+take away from… or my impression for this comment, is I think…
+
+[Timothy Koh] 12:10:27
+I think they're talking about the in-silico knockouts.
+
+[Yang Dai] 12:10:30
+Yeah, right, but in…
+
+[Timothy Koh] 12:10:32
+of the cell at Oracle.
+
+[Yang Dai] 12:10:33
+Yeah, in silico, lockout is… it is harder to kind of talking about
+
+[Timothy Koh] 12:10:34
+results.
+
+[Yang Dai] 12:10:40
+high points, right? I mean, we did a few iterations of, uh, of, uh,
+
+[Yang Dai] 12:10:46
+predict the lockout effect, you know, a few steps further, but…
+
+[Timothy Koh] 12:10:46
+Yeah.
+
+[Yang Dai] 12:10:50
+That is not sort of a critical time points that…
+
+[Yang Dai] 12:10:55
+that it… yeah, I'm afraid that his reviewer is a little bit unclear or confused with certain things, right?
+
+[Timothy Koh] 12:10:56
+Yeah.
+
+[Timothy Koh] 12:11:01
+Yeah, yeah, I agree, I agree. I think… I think they… again, I think this is a biology person.
+
+[Yang Dai] 12:11:04
+Yeah, yeah.
+
+[Timothy Koh] 12:11:09
+who has questions, like, okay, so when…
+
+[Yang Dai] 12:11:10
+Mm-hmm.
+
+[Timothy Koh] 12:11:13
+I think they're trying to get at a question, do some of the transcription factors… are they activated at certain time points? And that's critical for the transitions, right?
+
+[Yang Dai] 12:11:23
+Right, right.
+
+[Timothy Koh] 12:11:25
+Um, but we… we can't really…
+
+[Yang Dai] 12:11:25
+So…
+
+[Timothy Koh] 12:11:29
+I'm not sure we can answer those questions with this analysis.
+
+[Yang Dai] 12:11:31
+I… I think…
+
+[Yang Dai] 12:11:33
+at least so we can look at when we stop, the stopping.
+
+[Yang Dai] 12:11:38
+iteration.
+
+[Yang Dai] 12:11:40
+the predictive transcript on that, the stopping.
+
+[Yang Dai] 12:11:43
+place, then we can look at the differences of, uh…
+
+[Yang Dai] 12:11:48
+the expression, yeah.
+
+[Timothy Koh] 12:11:48
+So, so by stopping, you mean, kind of, if it…
+
+[Timothy Koh] 12:11:53
+it's kind of inhibiting transition that…
+
+[Yang Dai] 12:11:57
+Um, I think the way the Brandon's, uh, you can add the detail, but, uh…
+
+[Timothy Koh] 12:11:58
+Thanks for you.
+
+[Yang Dai] 12:12:02
+I think we lock out, then we run the algorithm that the regression model for…
+
+[Yang Dai] 12:12:08
+kind of multiple steps, and then…
+
+[Yang Dai] 12:12:12
+Then we look at the…
+
+[Yang Dai] 12:12:13
+you know, the video is showing those changes in…
+
+[Yang Dai] 12:12:19
+Uh, when we did the video, it's plotting those, uh…
+
+[Yang Dai] 12:12:22
+predicted the transcriptome there shifting.
+
+[Yang Dai] 12:12:26
+towards different states, but…
+
+[Yang Dai] 12:12:29
+But those are, you know, we did the several rounds of that.
+
+[Yang Dai] 12:12:34
+then I can't…
+
+[Yang Dai] 12:12:35
+I think that could be.
+
+[Yang Dai] 12:12:38
+looking at the simulated thing, or looking at the…
+
+[Yang Dai] 12:12:43
+endings, uh, kind of time.
+
+[Yang Dai] 12:12:46
+iteration, so…
+
+[Yang Dai] 12:12:48
+Brendan, do you have any?
+
+[Brandon Lukas] 12:12:50
+Yeah, the way I interpret this comment is that I think this reviewer is…
+
+[Brandon Lukas] 12:12:55
+They say time points, but they mean pseudo-time.
+
+[Brandon Lukas] 12:12:59
+And they want to see if the results that we get from our cell oracle, if it…
+
+[Brandon Lukas] 12:13:07
+aligns with our experimental and observed data.
+
+[Brandon Lukas] 12:13:11
+So, for example, like, IRF4, we see that if we knock out IRF4,
+
+[Brandon Lukas] 12:13:18
+then the cell state transitions.
+
+[Brandon Lukas] 12:13:20
+through cluster 7 is inhibited.
+
+[Brandon Lukas] 12:13:23
+And… like…
+
+[Brandon Lukas] 12:13:25
+Cluster 7 is going to the APC lake cluster.
+
+[Brandon Lukas] 12:13:30
+So… and we see that the diabetic have a reduced population of APC-like cells.
+
+[Brandon Lukas] 12:13:37
+So, I think, like, they're looking for… does…
+
+[Brandon Lukas] 12:13:41
+the evidence, like, the…
+
+[Brandon Lukas] 12:13:43
+RNA, uh, data, does that support what the cell oracle shows? So…
+
+[Brandon Lukas] 12:13:49
+Like, in cluster 7,
+
+[Brandon Lukas] 12:13:50
+we should expect to see…
+
+[Brandon Lukas] 12:13:53
+downregulation of…
+
+[Brandon Lukas] 12:13:57
+Or, like, if we do see downregulation of IRF4, then that would kind of support the Cell Oracle analysis, like,
+
+[Brandon Lukas] 12:14:05
+I think that's… that's the way I kind of interpreted it.
+
+[Yang Dai] 12:14:06
+Yeah.
+
+[Timothy Koh] 12:14:09
+I mean, they do, Doug, about…
+
+[Timothy Koh] 12:14:13
+over or underexpression of the transcription factors, but…
+
+[Yang Dai] 12:14:15
+Right.
+
+[Timothy Koh] 12:14:18
+you know…
+
+[Timothy Koh] 12:14:21
+part of, you know, part of the whole bit famine analysis is that the expression level doesn't necessarily, kind of, dictate activity, right?
+
+[Timothy Koh] 12:14:30
+So, I mean, we can definitely bring that up.
+
+[Timothy Koh] 12:14:33
+But… yeah, it's…
+
+[Timothy Koh] 12:14:37
+I think, Dr. Dye is right, is that I think the reviewer is…
+
+[Timothy Koh] 12:14:42
+Well, it's not 100% clear.
+
+[Timothy Koh] 12:14:46
+at what they're trying to get at here.
+
+[Timothy Koh] 12:14:50
+Um, we could look at expression of IRF4, that's what
+
+[Timothy Koh] 12:14:56
+comment.
+
+[Timothy Koh] 12:14:57
+talked about, so we could look at IRA4 expression.
+
+[Timothy Koh] 12:15:02
+Um, but, I mean, we did see…
+
+[Timothy Koh] 12:15:06
+we could look at it in that cluster, or even earlier, and see if it's different there.
+
+[Timothy Koh] 12:15:14
+in jingboat, in the first paper, we did see reduction…
+
+[Timothy Koh] 12:15:21
+I mean, it is a highly active in cluster, whatever, 5, but…
+
+[Timothy Koh] 12:15:26
+It's… it's lower…
+
+[Timothy Koh] 12:15:30
+Overall, between…
+
+[Timothy Koh] 12:15:32
+in diabetic mice, and…
+
+[Timothy Koh] 12:15:34
+non-diabetic, but that wasn't call it certified specific.
+
+[Yang Dai] 12:15:38
+Yeah. I think a good point to make is the kind of, uh,
+
+[Brandon Lukas] 12:15:39
+Yeah.
+
+[Yang Dai] 12:15:42
+activity and the gene expression not consistent. This is one thing. The other is, uh,
+
+[Yang Dai] 12:15:48
+like, the cells had a…
+
+[Yang Dai] 12:15:52
+more similar transcriptome profile in certain clusters doesn't mean
+
+[Yang Dai] 12:15:58
+you know, individual, you know, molecules, expression would be…
+
+[Yang Dai] 12:16:04
+similar to that.
+
+[Yang Dai] 12:16:06
+to certain… to the cells in that we previously observed from our expression level, right? It's just the overall…
+
+[Yang Dai] 12:16:15
+like the transcriptome are similar. When we examine the individual,
+
+[Yang Dai] 12:16:20
+molecules, their expression level, may not be…
+
+[Yang Dai] 12:16:23
+you know, the same, you know, that's a…
+
+[Yang Dai] 12:16:26
+possibility, but it could be also, you know, showing…
+
+[Yang Dai] 12:16:31
+consistent.
+
+[Yang Dai] 12:16:33
+consistency with the…
+
+[Yang Dai] 12:16:35
+was the observed that I just said Brandon comments for.
+
+[Yang Dai] 12:16:39
+Well, we can look at that.
+
+[Timothy Koh] 12:16:40
+Yeah, we can look at some other stuff, but it seems to me…
+
+[Yang Dai] 12:16:42
+Yeah, right.
+
+[Timothy Koh] 12:16:45
+you know, the last question, is there anything else you can learn by separating the data into ND-only and DB-only?
+
+[Yang Dai] 12:16:46
+Yeah, he's…
+
+[Timothy Koh] 12:16:55
+I think… I think we can respond to that question with what you said.
+
+[Timothy Koh] 12:17:02
+earlier, Yang, that…
+
+[Yang Dai] 12:17:03
+Mm-hmm.
+
+[Timothy Koh] 12:17:03
+you know, it's hard to reckon. If you do separate
+
+[Timothy Koh] 12:17:08
+And now it's… it…
+
+[Timothy Koh] 12:17:10
+it could be hard to…
+
+[Yang Dai] 12:17:12
+Yeah, so, but we… we can just use the combined sales analysis, but we can retrieve the…
+
+[Timothy Koh] 12:17:14
+reconcile.
+
+[Yang Dai] 12:17:22
+simulated profile.
+
+[Yang Dai] 12:17:23
+that our law called effect.
+
+[Yang Dai] 12:17:26
+Uh, upon…
+
+[Yang Dai] 12:17:27
+the cells from the DB and the…
+
+[Yang Dai] 12:17:30
+non-diabetic, so we can do that, yeah.
+
+[Timothy Koh] 12:17:31
+Okay. Okay.
+
+[Yang Dai] 12:17:33
+So we can say, you know, it's a hard… it's hard, you know, we don't want to…
+
+[Yang Dai] 12:17:37
+I mean, it's not that we don't want to. There's a reason if we do separately, it's hard to reconcile, but we do…
+
+[Yang Dai] 12:17:45
+Uh, we can retrieve these profiles, simulated.
+
+[Timothy Koh] 12:17:49
+Okay, simulated, okay.
+
+[Yang Dai] 12:17:50
+Uh, yeah, so then we can compare those, right?
+
+[Timothy Koh] 12:17:54
+Yeah.
+
+[Yang Dai] 12:17:54
+Then again, there's a time point. It's the thing, it's a…
+
+[Yang Dai] 12:17:57
+It's not the same, but we can see that.
+
+[Timothy Koh] 12:18:00
+But we can do… we can say pseudo time, right?
+
+[Yang Dai] 12:18:05
+simulated profile.
+
+[Timothy Koh] 12:18:07
+simulated profiles, okay.
+
+[Yang Dai] 12:18:08
+I don't know if it's a pseudo time.
+
+[Timothy Koh] 12:18:09
+Yeah.
+
+[Yang Dai] 12:18:10
+Yeah, I'm not so clear about this.
+
+[Yang Dai] 12:18:12
+Yeah.
+
+[Timothy Koh] 12:18:14
+Yeah, I mean, I think it's kind of… it's one of those comments that I think if we give them something, it'll be…
+
+[Yang Dai] 12:18:16
+it's… yeah.
+
+[Yang Dai] 12:18:21
+Yeah.
+
+[Timothy Koh] 12:18:22
+It'll be good enough.
+
+[Yang Dai] 12:18:23
+Yeah, it's like a simulated profile.
+
+[Yang Dai] 12:18:26
+is more closer to the transcriptome at a certain pseudo-time point.
+
+[Yang Dai] 12:18:31
+Alright? Yeah, at the… some cells at the serums.
+
+[Yang Dai] 12:18:36
+points, yeah. Yeah, I think the first reviews, comments are… is easy.
+
+[Yang Dai] 12:18:40
+are easy to address. Second one is, uh…
+
+[Timothy Koh] 12:18:41
+Yep. M. M.
+
+[Yang Dai] 12:18:45
+I mean, mostly, he didn't like us to talk as if this is…
+
+[Timothy Koh] 12:18:50
+Right.
+
+[Yang Dai] 12:18:51
+mechanistic results without further…
+
+[Yang Dai] 12:18:54
+validation, experimental validation. He doesn't like our words of saying it's validated, just looking at the literature, right?
+
+[Timothy Koh] 12:18:56
+Right.
+
+[Timothy Koh] 12:19:00
+Right. Yeah, I'm… I'm kind of surprised. I mean, I won't…
+
+[Timothy Koh] 12:19:06
+argue it to vehemently, but I'm a little surprised. I think…
+
+[Timothy Koh] 12:19:13
+We can… we can… we can just change validated with consistent.
+
+[Yang Dai] 12:19:17
+Right, yeah, yeah.
+
+[Timothy Koh] 12:19:17
+Or something like that. It's consistent with these findings, it's consistent with these findings. Um…
+
+[Yang Dai] 12:19:19
+Yeah. Yeah.
+
+[Timothy Koh] 12:19:23
+I think, you know, we can lean in, especially now that the paper with the IR4 not go to publish, I think we can lean on that one as kind of
+
+[Timothy Koh] 12:19:36
+validating, um…
+
+[Yang Dai] 12:19:37
+Yeah. Yeah, per…
+
+[Timothy Koh] 12:19:38
+But…
+
+[Yang Dai] 12:19:39
+Personally, I also against using the validated. I correct many wordings that are used in my dad's…
+
+[Timothy Koh] 12:19:43
+Again.
+
+[Timothy Koh] 12:19:45
+Okay.
+
+[Yang Dai] 12:19:47
+the other part of Caesars, I think we should not use literature-validated.
+
+[Yang Dai] 12:19:52
+consistent with the literature finding.
+
+[Timothy Koh] 12:19:53
+Okay, yeah, yeah, that's…
+
+[Yang Dai] 12:19:54
+Yeah. Experimental validation, yeah.
+
+[Timothy Koh] 12:19:56
+I'm… I'm… I'm fine with that. And the same thing with… in… in this comment one about
+
+[Yang Dai] 12:19:59
+Yeah.
+
+[Timothy Koh] 12:20:04
+talking about driving transitions, um…
+
+[Timothy Koh] 12:20:08
+we can stop in that, you know…
+
+[Timothy Koh] 12:20:11
+candidate regulators.
+
+[Timothy Koh] 12:20:14
+I mean, we can say candidate drivers, whatever. So just make sure that we are…
+
+[Yang Dai] 12:20:17
+Right, right, right.
+
+[Yang Dai] 12:20:19
+Yeah.
+
+[Timothy Koh] 12:20:21
+clearly saying that.
+
+[Yang Dai] 12:20:22
+Right. That's it.
+
+[Timothy Koh] 12:20:23
+Um, it… it… we do…
+
+[Timothy Koh] 12:20:25
+Well, we didn't… maybe didn't use the words that they're looking for. We did say predicted a lot.
+
+[Yang Dai] 12:20:29
+Mm-hmm.
+
+[Yang Dai] 12:20:32
+Right. Yeah.
+
+[Timothy Koh] 12:20:32
+Um, but, you know…
+
+[Yang Dai] 12:20:34
+Yeah, yeah.
+
+[Timothy Koh] 12:20:35
+Maybe in the conclusion statement, um…
+
+[Yang Dai] 12:20:38
+Right.
+
+[Timothy Koh] 12:20:39
+So…
+
+[Timothy Koh] 12:20:42
+Comment to…
+
+[Yang Dai] 12:20:45
+Two, I don't think there are any additional analysis required, but
+
+[Yang Dai] 12:20:50
+just change the wording.
+
+[Brandon Lukas] 12:20:51
+Mm-hmm.
+
+[Yang Dai] 12:20:51
+Right? And the things brought up is later, um, 3, 4, those are some sort of a…
+
+[Timothy Koh] 12:20:53
+Yes.
+
+[Timothy Koh] 12:20:57
+Right, yeah, I agree, yeah.
+
+[Timothy Koh] 12:20:59
+Yep. Okay, so the trajectory inference, right?
+
+[Yang Dai] 12:21:00
+Yeah, trajectory…
+
+[Yang Dai] 12:21:03
+Yeah, again, it's a jointly, right? She has a…
+
+[Yang Dai] 12:21:08
+Uh, 1, 2, 3, 4…
+
+[Yang Dai] 12:21:11
+ending of the fourth line, that, uh…
+
+[Yang Dai] 12:21:14
+However, that's from…
+
+[Yang Dai] 12:21:16
+You know, that's…
+
+[Timothy Koh] 12:21:17
+Yeah, jointly.
+
+[Timothy Koh] 12:21:20
+And we… they say that we…
+
+[Timothy Koh] 12:21:23
+We deal with it in the discussion. Both reviewers would say that's enough, but…
+
+[Yang Dai] 12:21:28
+Mm-hmm, mm-hmm.
+
+[Timothy Koh] 12:21:29
+Um, but…
+
+[Timothy Koh] 12:21:31
+A digital analyses demonstrating robustness of these trajectories.
+
+[Timothy Koh] 12:21:37
+Compare… how do you… what do you guys think about…
+
+[Yang Dai] 12:21:38
+I…
+
+[Timothy Koh] 12:21:41
+that comment.
+
+[Yang Dai] 12:21:43
+robustness, but this is already, oh, through… either through separate analysis.
+
+[Yang Dai] 12:21:51
+or through comparison with alternative trajectory inference method towards
+
+[Yang Dai] 12:21:56
+So he wanted to…
+
+[Yang Dai] 12:21:59
+I mean, this is also arguably, is worse for arguing that
+
+[Yang Dai] 12:22:04
+often different trajectory analysis based on the published literature. They don't agree with each other.
+
+[Yang Dai] 12:22:10
+But, very likely, we will end up with different ones, even if we use the combined
+
+[Yang Dai] 12:22:19
+approaches.
+
+[Yang Dai] 12:22:21
+And, uh, he also suggested differently, running trajectory analysis for La Men.
+
+[Yang Dai] 12:22:27
+or different trajectory analysis with the combined profile. He wants the stability for that.
+
+[Yang Dai] 12:22:34
+Um, you know, but, uh, you know, Lame itself has already
+
+[Yang Dai] 12:22:39
+incorporating the sort of, uh…
+
+[Yang Dai] 12:22:42
+robustness and confidence in that.
+
+[Yang Dai] 12:22:45
+Whether he still won another one, so it might be…
+
+[Yang Dai] 12:22:49
+some other methods.
+
+[Timothy Koh] 12:22:51
+So, I… I will point out that in… in the
+
+[Timothy Koh] 12:22:57
+Earth's paper that we just did on the…
+
+[Timothy Koh] 12:23:01
+Uh, what the non-diabetic mice.
+
+[Timothy Koh] 12:23:04
+The trajectories were…
+
+[Timothy Koh] 12:23:07
+I mean, the structure was fairly similar.
+
+[Timothy Koh] 12:23:11
+Um, you know, you don't have those diabetic phenotypes.
+
+[Timothy Koh] 12:23:18
+That… so… so it… it's somewhat different, but there were trajectories…
+
+[Timothy Koh] 12:23:24
+correct me if I'm wrong, Kingbo, but I think there was trajectories from early to late phenotypes, which were reparative.
+
+[Timothy Koh] 12:23:32
+or early to…
+
+[Timothy Koh] 12:23:36
+APC phenotype.
+
+[Timothy Koh] 12:23:38
+Is that right, King Bo?
+
+[Yang Dai] 12:23:38
+Yeah.
+
+[Jingbo Pang] 12:23:40
+Yeah.
+
+[Yang Dai] 12:23:40
+Yeah, I have a feeling this, uh, since we are… so, since we are dealing with a very anxious microphages itself, the trajectory won't go too, too crazy.
+
+[Yang Dai] 12:23:51
+And like other, you know,
+
+[Yang Dai] 12:23:55
+the real samples from human or mouse tissue directly.
+
+[Yang Dai] 12:23:59
+So, I mean, this is also true, but we are much more better quality controlled, so…
+
+[Yang Dai] 12:24:06
+I feel, even if we do this separately,
+
+[Yang Dai] 12:24:11
+it may still have a consistent…
+
+[Yang Dai] 12:24:14
+trajectory through the way of…
+
+[Yang Dai] 12:24:16
+routing, so…
+
+[Yang Dai] 12:24:18
+So, I think this is probably not hard to… just, we have to do it to satisfy.
+
+[Timothy Koh] 12:24:23
+Okay. Do it and try… see what it looks like.
+
+[Yang Dai] 12:24:24
+This, uh, reviews…
+
+[Yang Dai] 12:24:25
+Yeah, to see AI would look like, then we concluded, right? Either way it goes, we have an argument against it.
+
+[Yang Dai] 12:24:33
+Right.
+
+[Timothy Koh] 12:24:33
+Right, okay. Yeah, and if it… if it looks reason…
+
+[Yang Dai] 12:24:34
+Right, yeah.
+
+[Timothy Koh] 12:24:38
+If it's fairly straightforward to interpret, then we could put it in a supplementary figure.
+
+[Yang Dai] 12:24:42
+Yeah.
+
+[Yang Dai] 12:24:44
+Right, right, okay.
+
+[Timothy Koh] 12:24:44
+But if it… if it looks like…
+
+[Timothy Koh] 12:24:48
+It's just crazy, then…
+
+[Timothy Koh] 12:24:50
+come up with an argument.
+
+[Yang Dai] 12:24:50
+Yeah.
+
+[Yang Dai] 12:24:52
+Right.
+
+[Timothy Koh] 12:24:52
+Okay.
+
+[Timothy Koh] 12:24:57
+Okay, so 4… so they want a little more justification for cells data in.
+
+[Yang Dai] 12:25:04
+I wonder, this guy is actually review your…
+
+[Yang Dai] 12:25:08
+Frontier paper, because he singled out this ZBTV46, right?
+
+[Timothy Koh] 12:25:14
+Uh-uh, yeah.
+
+[Yang Dai] 12:25:15
+I feel like he is one… and also he…
+
+[Timothy Koh] 12:25:18
+You think it's the same one?
+
+[Yang Dai] 12:25:19
+Yeah, he also, you know, mistakenly stayed the journal name, so I feel…
+
+[Timothy Koh] 12:25:24
+Yeah.
+
+[Yang Dai] 12:25:26
+He… he probably is the one.
+
+[Yang Dai] 12:25:29
+Right? Especially that question.
+
+[Timothy Koh] 12:25:30
+So, I think…
+
+[Yang Dai] 12:25:34
+However, that it remains unclear whether this popu… right?
+
+[Timothy Koh] 12:25:37
+Yeah, we can… we can… we, you know, we can… I think we talked about this.
+
+[Timothy Koh] 12:25:43
+But we can add some discussion about that, especially now the paper's published.
+
+[Timothy Koh] 12:25:50
+light one paper, or… they just want…
+
+[Timothy Koh] 12:25:52
+more discussion related to…
+
+[Timothy Koh] 12:25:56
+Yeah, the Life one, it seems to be a population that is gaining interest. I got a comment at the meeting I was just at.
+
+[Timothy Koh] 12:26:06
+Uh, that they're seeing the light on macrophages, and they're… they're…
+
+[Timothy Koh] 12:26:11
+He wouldn't say much about them, but they're publishing soon.
+
+[Yang Dai] 12:26:13
+Yeah. Yeah.
+
+[Yang Dai] 12:26:15
+So this paper, publishing, so it's a…
+
+[Yang Dai] 12:26:19
+maybe TP46.
+
+[Yang Dai] 12:26:21
+So it's easy to adjust. So, no further analysis for this.
+
+[Timothy Koh] 12:26:25
+No, it's just… it's just kind of talking about… I think in, you know, a lot of it is just…
+
+[Yang Dai] 12:26:26
+for the side. Yeah.
+
+[Yang Dai] 12:26:28
+Right.
+
+[Timothy Koh] 12:26:31
+kind of collating more of the genes that inform our kind of description of the phenotype.
+
+[Yang Dai] 12:26:38
+Right, yeah.
+
+[Timothy Koh] 12:26:39
+bringing a little bit more of that together. And then I think maybe we can…
+
+[Timothy Koh] 12:26:45
+lean a little bit more on the paper that's just got published, so…
+
+[Timothy Koh] 12:26:49
+Yeah, I think that's okay.
+
+[Yang Dai] 12:26:49
+Yeah.
+
+[Yang Dai] 12:26:51
+Number 5 is more regarding this PGD. Brandon, do you…?
+
+[Yang Dai] 12:26:56
+Did you give a salt on…
+
+[Yang Dai] 12:26:59
+This comment?
+
+[Brandon Lukas] 12:26:59
+Yeah, I thought it was a little bit out of the scope for this, since it's just an application of PGD, but…
+
+[Brandon Lukas] 12:27:06
+He's looking for a benchmarking of PGD, and…
+
+[Brandon Lukas] 12:27:10
+Like, I think it was out of scope, but since I plan to do this kind of…
+
+[Brandon Lukas] 12:27:14
+Benchmarking anyways, like…
+
+[Yang Dai] 12:27:16
+Anyway, yeah.
+
+[Brandon Lukas] 12:27:17
+I don't really mind doing it, um…
+
+[Yang Dai] 12:27:19
+Yeah, yeah.
+
+[Brandon Lukas] 12:27:20
+Yeah, so it could be… yeah, I think I can do it.
+
+[Yang Dai] 12:27:24
+Yeah, he basically is saying that, uh,
+
+[Timothy Koh] 12:27:24
+Okay.
+
+[Yang Dai] 12:27:27
+you know, is this only for visualization purposes, right? First part. Second part is sort of a…
+
+[Yang Dai] 12:27:34
+benchmarking.
+
+[Brandon Lukas] 12:27:35
+Mm-hmm.
+
+[Yang Dai] 12:27:36
+results, yeah. So, I think it's a…
+
+[Yang Dai] 12:27:39
+it's addressable, this question.
+
+[Brandon Lukas] 12:27:42
+Mm-hmm.
+
+[Timothy Koh] 12:27:44
+Okay.
+
+[Yang Dai] 12:27:47
+So, Oracle.
+
+[Timothy Koh] 12:27:50
+Yeah, again, emphasize more clearly that these are…
+
+[Yang Dai] 12:27:54
+Mm-hmm, mm-hmm.
+
+[Timothy Koh] 12:27:55
+You know, are a starting point for future.
+
+[Timothy Koh] 12:28:00
+Which I'm pretty sure that we've said, but they… I think we'd just be
+
+[Yang Dai] 12:28:00
+Yeah.
+
+[Timothy Koh] 12:28:05
+more stronger with that, kind of…
+
+[Yang Dai] 12:28:09
+I think the methodology part requires a little bit more content.
+
+[Yang Dai] 12:28:13
+This is so what. However, these analysis are presented are largely descriptively.
+
+[Yang Dai] 12:28:19
+So, uh, without formal statistic assessment,
+
+[Yang Dai] 12:28:24
+of the robustness and significance.
+
+[Yang Dai] 12:28:26
+Um, I mean, yeah, true, sell Oracle does not provide it.
+
+[Yang Dai] 12:28:31
+But we could add a little bit more technical aspect of Cell Oracle.
+
+[Yang Dai] 12:28:38
+Right? I… I… I… yeah.
+
+[Timothy Koh] 12:28:38
+Oh, you mean in the methods, or…?
+
+[Yang Dai] 12:28:40
+Yeah, in a method. We can even, you know, if method expanded, bloated too much, we can put it a little bit more in the supplement.
+
+[Yang Dai] 12:28:49
+Just to… yeah, to describe a little bit more detail.
+
+[Timothy Koh] 12:28:49
+Okay. Okay.
+
+[Timothy Koh] 12:28:52
+Okay.
+
+[Timothy Koh] 12:28:57
+Uh, and then the last one is something about thorough discussion on the gene regulatory network.
+
+[Yang Dai] 12:29:06
+I don't think that makes sense to me.
+
+[Brandon Lukas] 12:29:09
+You know?
+
+[Yang Dai] 12:29:10
+Because, uh, yeah, the Chip Alice is using it as, uh,
+
+[Yang Dai] 12:29:14
+uh, you know, the prior knowledge. Bitfam is, uh…
+
+[Yang Dai] 12:29:18
+working on to… to identify, based on the evidence, to see
+
+[Yang Dai] 12:29:23
+what are the links supported, right?
+
+[Yang Dai] 12:29:27
+And then the cell oracle is based on…
+
+[Yang Dai] 12:29:31
+We did not base on Bitfam results, do we?
+
+[Brandon Lukas] 12:29:34
+No.
+
+[Yang Dai] 12:29:34
+Right? Based on a different…
+
+[Yang Dai] 12:29:36
+But this made it clear, maybe it was causing additional problems. That's also my concern before.
+
+[Yang Dai] 12:29:43
+Because, uh, we did it, um…
+
+[Yang Dai] 12:29:46
+the… the TF Activity Report,
+
+[Yang Dai] 12:29:49
+is based on the, you know, Bitfam, but the cell oracle.
+
+[Yang Dai] 12:29:55
+report, uh, the analysis is based on the expression… I'm sorry, based on the…
+
+[Yang Dai] 12:30:02
+ground, uh, they call it a ground GRN.
+
+[Yang Dai] 12:30:05
+That is used in Cell Oracle, which is not even Chip Alice.
+
+[Yang Dai] 12:30:10
+Right. Yeah.
+
+[Timothy Koh] 12:30:11
+Okay, so these are… these are independent…
+
+[Yang Dai] 12:30:14
+Yeah, independent, for sure.
+
+[Timothy Koh] 12:30:15
+GGRNs.
+
+[Yang Dai] 12:30:16
+But I'm afraid this view will… saying, okay, your result is using different GR.
+
+[Yang Dai] 12:30:23
+you know, the wiring of the things.
+
+[Yang Dai] 12:30:26
+But we… yeah.
+
+[Brandon Lukas] 12:30:26
+Um, actually, the seed… the seed GRN is the same for both.
+
+[Brandon Lukas] 12:30:33
+the base GRN for Cell Oracle is the same…
+
+[Yang Dai] 12:30:36
+Uh-uh, okay, so… so he…
+
+[Brandon Lukas] 12:30:37
+They, uh, prior for Bitfam.
+
+[Brandon Lukas] 12:30:39
+Which is derived from Chip Atlas.
+
+[Yang Dai] 12:30:39
+Okay, so the…
+
+[Yang Dai] 12:30:41
+Yeah, the chip out… I think the cell oracle did not…
+
+[Yang Dai] 12:30:46
+Uh, to me, if I were the wrong, I would have used a bit family result to do the cell Oracle, but since families are also computational,
+
+[Yang Dai] 12:30:54
+results, so I would not go from there, but…
+
+[Yang Dai] 12:30:59
+But I think it is indeed… it's the…
+
+[Yang Dai] 12:31:03
+Uh, it's not as, uh, what he said is, uh,
+
+[Yang Dai] 12:31:08
+um, like a cyclic…
+
+[Timothy Koh] 12:31:10
+Yeah, circular, like,
+
+[Yang Dai] 12:31:10
+Um, which is different. They are circular, no.
+
+[Yang Dai] 12:31:13
+It's not, yeah.
+
+[Timothy Koh] 12:31:14
+You know, okay.
+
+[Timothy Koh] 12:31:15
+Okay, I'll rely on you guys to respond to that one.
+
+[Yang Dai] 12:31:18
+Yeah, and also for the Bitfam part of the results, we just, uh…
+
+[Yang Dai] 12:31:22
+focus on the TF activity. We did not really look at the targets, you know, in a sense.
+
+[Timothy Koh] 12:31:28
+Yeah.
+
+[Yang Dai] 12:31:28
+the analysis, so…
+
+[Yang Dai] 12:31:31
+Um, yeah, I think we can just clarify that. Don't…
+
+[Yang Dai] 12:31:35
+don't… don't go to too much, and then… then it'll be, you know, I… it's, uh…
+
+[Timothy Koh] 12:31:36
+Okay.
+
+[Timothy Koh] 12:31:37
+Sure. Yeah.
+
+[Yang Dai] 12:31:42
+it could be problematic, and I feel…
+
+[Yang Dai] 12:31:47
+uncomfortable to some extent with, uh, separately used, uh, different GRN for…
+
+[Timothy Koh] 12:31:53
+Okay.
+
+[Yang Dai] 12:31:54
+reporting TF activity versus, uh,
+
+[Yang Dai] 12:31:56
+Uh, but yeah, the analysis for the…
+
+[Timothy Koh] 12:31:57
+Got it.
+
+[Yang Dai] 12:32:00
+a lot cut, so…
+
+[Timothy Koh] 12:32:01
+Okay. Um, so…
+
+[Timothy Koh] 12:32:06
+I think… I think it all sounds good. I think we… we've got a…
+
+[Timothy Koh] 12:32:11
+good plan for kind of moving forward, um…
+
+[Timothy Koh] 12:32:16
+Brandon, do you want to…
+
+[Timothy Koh] 12:32:18
+to start to draft the responses, or would you like me to, or do you want to go ahead?
+
+[Brandon Lukas] 12:32:24
+Um, I can… I can try to draft the responses, yeah.
+
+[Timothy Koh] 12:32:29
+Okay. Okay. Have you… have you…
+
+[Timothy Koh] 12:32:33
+Have you been part of that process before?
+
+[Yang Dai] 12:32:37
+No, I… I don't think quite as formal as this one. I think it'll be good to have
+
+[Timothy Koh] 12:32:37
+The Brisbane
+
+[Timothy Koh] 12:32:41
+Okay.
+
+[Yang Dai] 12:32:43
+Brandon, uh…
+
+[Brandon Lukas] 12:32:45
+Mm-hmm.
+
+[Timothy Koh] 12:32:45
+Right.
+
+[Yang Dai] 12:32:45
+you know, go through this process and know how to…
+
+[Timothy Koh] 12:32:47
+Okay. Right. So, I can, um… what I can do, Brandon, I have drafted
+
+[Yang Dai] 12:32:49
+I'll do that.
+
+[Timothy Koh] 12:32:55
+Um, the responses for this other vapor.
+
+[Timothy Koh] 12:33:00
+from the Frontiers paper.
+
+[Timothy Koh] 12:33:01
+you know, they're not complete, but I'll… I can share that with you, so you just have a sense of how… how I'm kind of framing
+
+[Timothy Koh] 12:33:10
+the response, um…
+
+[Brandon Lukas] 12:33:11
+Mm-hmm.
+
+[Yang Dai] 12:33:12
+Yeah, I think it might be…
+
+[Yang Dai] 12:33:14
+the biological… the comments related to the, you know, the descriptive of all the biology might be…
+
+[Yang Dai] 12:33:22
+Dr. Cole, if you can address, might be, yeah, the part-related analysis that can be done by, I think,
+
+[Timothy Koh] 12:33:25
+Right. Sure. Yeah.
+
+[Yang Dai] 12:33:31
+Uh, starting with Brendan, that might be a good idea.
+
+[Timothy Koh] 12:33:32
+Sure. Yeah, we… I'll let you, you know, take first crack at it, and then, you know, I can jump in with… especially for the ones that are dealing with the biology, because there's a couple that…
+
+[Yang Dai] 12:33:44
+Right.
+
+[Timothy Koh] 12:33:45
+We may want to dig into the literature a little bit more, you know, including this comment one about that paper. I don't… I remember this paper being published
+
+[Yang Dai] 12:33:50
+Mm-hmm.
+
+[Timothy Koh] 12:33:57
+But I haven't read it for 10 years, so I have to go back and see exactly what they did. They're looking at a different cell population, but…
+
+[Timothy Koh] 12:34:07
+Um, it's interesting that they highlighted CBPA
+
+[Timothy Koh] 12:34:12
+They were clearly interested, um…
+
+[Timothy Koh] 12:34:15
+So…
+
+[Brandon Lukas] 12:34:16
+Okay.
+
+[Yang Dai] 12:34:17
+Yeah. So, yeah, just the… I think, Brandon, you did not mention to Dr. Cole that
+
+[Yang Dai] 12:34:24
+Brenda submitted the graduate…
+
+[Yang Dai] 12:34:27
+research.
+
+[Yang Dai] 12:34:30
+a Word application based on… say that he is going to present his result to conference, so they actually award it and
+
+[Timothy Koh] 12:34:32
+Oh.
+
+[Yang Dai] 12:34:38
+With $2,000, is that correct? So she can… he can use it for his next conference, but…
+
+[Timothy Koh] 12:34:39
+Oh, great.
+
+[Timothy Koh] 12:34:44
+Okay, great.
+
+[Yang Dai] 12:34:45
+Yeah, yeah.
+
+[Timothy Koh] 12:34:46
+Sounds good. Congrats, yeah.
+
+[Jingbo Pang] 12:34:46
+Congratulations!
+
+[Yang Dai] 12:34:46
+Yeah. Yeah, congratulations, yeah.
+
+[Brandon Lukas] 12:34:48
+Thank you.
+
+[Yang Dai] 12:34:50
+Yeah, that's good.
+
+[Timothy Koh] 12:34:50
+Oh, that's great.
+
+[Timothy Koh] 12:34:52
+Yeah, I think, you know, this is, uh…
+
+[Timothy Koh] 12:34:57
+His work is, uh… the… the conference I just went to at American Diabetes Association,
+
+[Timothy Koh] 12:35:05
+They… it was…
+
+[Timothy Koh] 12:35:08
+It was very interesting because there was another, uh, there was a guy from Stanford who does wound single-cell biology in wound… in wound healing, and they had some really interesting results, so he was a great guy to talk to, but otherwise…
+
+[Timothy Koh] 12:35:25
+There's very few people interested in wound healing at the American Diabetes.
+
+[Yang Dai] 12:35:29
+Uh-huh. Okay.
+
+[Timothy Koh] 12:35:30
+So there was, like…
+
+[Timothy Koh] 12:35:32
+I think there were 15,000 people at the conference, and 20 people showed up to our session.
+
+[Yang Dai] 12:35:38
+I see, yeah, yeah.
+
+[Timothy Koh] 12:35:39
+maybe third… maybe 30.
+
+[Timothy Koh] 12:35:41
+Um…
+
+[Yang Dai] 12:35:42
+Well, that's quite a gathering for… as an audience, but, you know, they have apparel sessions, people make, yeah.
+
+[Timothy Koh] 12:35:47
+You know, yeah, there were… I think they had at least 8 parallel sessions, so…
+
+[Yang Dai] 12:35:49
+We won't be able to, right.
+
+[Yang Dai] 12:35:51
+Yeah, so I have another conference at ISMB.
+
+[Yang Dai] 12:35:57
+So we submitted Brendan's, you know, the ones, but it is kind of late-breaking, so…
+
+[Yang Dai] 12:36:05
+So they usually, um, would just give a poster precision. So, this paper is a…
+
+[Yang Dai] 12:36:10
+And this paper, PGD,
+
+[Yang Dai] 12:36:15
+is already accepted for proceeding in the ISIEE EMBC, so… which is fine, just getting more…
+
+[Yang Dai] 12:36:24
+people know more about this little tools. And I think we… the published…
+
+[Timothy Koh] 12:36:24
+Sure, sure, sure.
+
+[Yang Dai] 12:36:32
+pre… the bioarchive.
+
+[Yang Dai] 12:36:34
+Uh, paper, pre-print. Actually got quite a bit of readers.
+
+[Timothy Koh] 12:36:39
+I'm good.
+
+[Yang Dai] 12:36:40
+download, like, 300-something since it's… I was surprised, like,
+
+[Timothy Koh] 12:36:42
+Okay.
+
+[Yang Dai] 12:36:45
+getting this much, actually, people are. I think is… there's something we are hitting, but we…
+
+[Timothy Koh] 12:36:46
+Yeah. Yeah.
+
+[Timothy Koh] 12:36:51
+Yeah,
+
+[Yang Dai] 12:36:51
+So we saw this as a, you know, some little tool helping us, but I guess that the people may have a similar…
+
+[Yang Dai] 12:36:59
+kind of needs for that.
+
+[Timothy Koh] 12:37:00
+Yeah, it was, um, so the guy who invited to give me… to give the talk at American Diabetes, he's a wound healing researcher, and he…
+
+[Timothy Koh] 12:37:12
+Actually, at the meeting that Brandon presented, wound healing meeting, he was aware of that paper, so I… I wouldn't be surprised if he hasn't.
+
+[Yang Dai] 12:37:20
+Oh, okay.
+
+[Yang Dai] 12:37:22
+Yeah. Yeah, okay. We'll see.
+
+[Timothy Koh] 12:37:23
+at least looked at it. Um, so…
+
+[Timothy Koh] 12:37:25
+That… and that was before we had presented it.
+
+[Yang Dai] 12:37:28
+Yeah, let's see what the… what's going to… what we see in ISMB, where they… they have a more pros in there.
+
+[Timothy Koh] 12:37:31
+Sure.
+
+[Timothy Koh] 12:37:35
+Right.
+
+[Timothy Koh] 12:37:37
+Okay, right, right, right, right, right, yeah, that sounds good.
+
+[Yang Dai] 12:37:38
+In that field. Right, yeah.
+
+[Timothy Koh] 12:37:43
+Okay, uh, so… so they had a deadline of July 30 in the, um…
+
+[Yang Dai] 12:37:49
+Okay, okay.
+
+[Timothy Koh] 12:37:50
+I think that should be reasonable, but, you know, if it…
+
+[Yang Dai] 12:37:54
+Yeah.
+
+[Timothy Koh] 12:37:54
+if we need a little bit of an extension, I don't think it'd be a problem.
+
+[Timothy Koh] 12:37:58
+So…
+
+[Yang Dai] 12:37:59
+Yeah, which is good. This, uh… I like this journal.
+
+[Yang Dai] 12:38:04
+systems biologies as the name of that.
+
+[Yang Dai] 12:38:07
+Yeah, yeah.
+
+[Timothy Koh] 12:38:07
+Yep, yep. I think so, and it… it did take a long time, but…
+
+[Timothy Koh] 12:38:12
+The reviews are very reasonable, so…
+
+[Yang Dai] 12:38:13
+Yeah, very fair, yeah, they are pretty good, actually, yeah.
+
+[Timothy Koh] 12:38:15
+Yep.
+
+[Timothy Koh] 12:38:17
+Right, yeah.
+
+[Timothy Koh] 12:38:20
+So… Okay, anything else?
+
+[Yang Dai] 12:38:22
+Okay.
+
+[Yang Dai] 12:38:24
+Alrighty, I don't have that.
+
+[Brandon Lukas] 12:38:24
+Um… should I… should I set up, like, a regular meeting every week?
+
+[Timothy Koh] 12:38:28
+Sure. If you want to do every week, or if you want a couple weeks for the first, you know,
+
+[Brandon Lukas] 12:38:29
+Again, okay.
+
+[Yang Dai] 12:38:34
+Mm-hmm, yeah, for the… for the initial.
+
+[Brandon Lukas] 12:38:34
+Yeah.
+
+[Timothy Koh] 12:38:37
+initial setup, I think that'd be fine.
+
+[Brandon Lukas] 12:38:39
+Okay. And this time, uh, every other week is fine?
+
+[Timothy Koh] 12:38:44
+Sure, yep. And we can, you know…
+
+[Yang Dai] 12:38:44
+Yeah, that when we get closer, then we can.
+
+[Timothy Koh] 12:38:47
+When we get closer, we might want to do every week, but we'll see if we need.
+
+[Brandon Lukas] 12:38:52
+Okay.
+
+[Timothy Koh] 12:38:54
+Okay. All right, sounds good.
+
+[Yang Dai] 12:38:55
+Okay.
+
+[Yang Dai] 12:38:57
+Thank you.
+
