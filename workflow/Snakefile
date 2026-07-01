@@ -35,6 +35,7 @@ include: "rules/lamian.smk"
 include: "rules/celloracle.smk"
 include: "rules/seurat.smk"
 include: "rules/pgd_celloracle.smk"
+include: "rules/revision.smk"
 
 
 rule all:
@@ -62,4 +63,9 @@ rule all:
         rules.pgd_aggregate_perturb_scores_overexpress.output,
         expand(rules.pgd_aggregate_mc_transitions.output, step=[0, 100, 200, 300, 400, 500, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 50]),
         expand(rules.pgd_aggregate_mc_transitions_overexpress.output, step=[0, 100, 200, 300, 400, 500]),
-        rules.whitelist_experiments.output
+        rules.whitelist_experiments.output,
+        # npj revision — per-condition trajectory compute (T1)
+        expand(rules.revision_infer_tree_condition.output, cond=["wt", "db"]),
+        expand(
+            rules.revision_evaluate_uncertainty_condition.output, cond=["wt", "db"]
+        ),

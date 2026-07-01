@@ -7,3 +7,4 @@ resources/all_cells.rds
 results/
 upload_box.sh
 ref_moma/
+logs/
