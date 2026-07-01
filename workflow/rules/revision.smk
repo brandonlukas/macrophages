@@ -6,34 +6,55 @@
 # pseudotime extraction, joint-vs-condition concordance stats, and the figures —
 # lives in the moma repo (~/code/timkoh/moma), which reads box/results/revision/.
 #
-# {cond} in {wt, db}: wt = non-diabetic, db = diabetic. Re-infers the trajectory
-# on each condition alone to test whether the joint ND+DB trajectory reproduces.
+# {cond} in {wt, db}: wt = non-diabetic, db = diabetic. Two complementary tests of
+# whether the joint ND+DB trajectory reproduces per condition:
+#   A = hold the joint clusters + joint PC space FIXED (collaborator request),
+#   C = re-infer everything in a condition-specific PC space (most independent).
+# See docs/revision-trajectory-robustness.md.
 
 
-# Per-condition trajectory. Same params as the published joint run
-# (workflow/rules/lamian.smk::infer_tree); only the condition subset differs.
-rule revision_infer_tree_condition:
+# Variant A (PI/collaborator request): per-condition trajectory holding the JOINT
+# clusters FIXED, then bootstrapping the cluster-center MST to get per-edge
+# detection rates (does each condition reconstruct the joint edges, and how
+# reliably). Directly comparable across joint/wt/db because cluster labels match.
+rule revision_infer_tree_fixedclusters:
     input:
-        config["inputs"]["cells"],
+        cells=config["inputs"]["cells"],
+        joint=rules.infer_tree.output,
     output:
-        "results/revision/lamian/{cond}/infer_tree.rds",
+        tree="results/revision/lamian_fixedclusters/{cond}/tree.rds",
+        edges="results/revision/lamian_fixedclusters/{cond}/edge_detection.csv",
     params:
-        seed_1=42,
-        seed_2=12345,
+        n_permute=1000,
+        seed=42,
     wildcard_constraints:
         cond="wt|db",
     script:
-        "../scripts/revision/infer_tree_condition.R"
+        "../scripts/revision/infer_tree_fixedclusters.R"
 
 
-# Per-condition branch uncertainty (detection.rate), so moma can draw
-# per-condition backbones with load_edge_tbl(). Parallel reimplementation of
-# Lamian::evaluate_uncertainty (drop-in output).
-rule revision_evaluate_uncertainty_condition:
+# Variant C ("most independent"): per-condition trajectory in a CONDITION-SPECIFIC
+# PC space (re-embed HVGs/scaling/PCA on each condition, then native Lamian).
+rule revision_infer_tree_condpca:
     input:
-        rules.revision_infer_tree_condition.output,
+        config["inputs"]["cells"],
     output:
-        "results/revision/lamian/{cond}/evaluate_uncertainty.rds",
+        "results/revision/lamian_condpca/{cond}/infer_tree.rds",
+    params:
+        seed_1=42,
+        seed_2=12345,
+        npcs=50,
+    wildcard_constraints:
+        cond="wt|db",
+    script:
+        "../scripts/revision/infer_tree_condition_pca.R"
+
+
+rule revision_evaluate_uncertainty_condpca:
+    input:
+        rules.revision_infer_tree_condpca.output,
+    output:
+        "results/revision/lamian_condpca/{cond}/evaluate_uncertainty.rds",
     params:
         n_permute=1000,
     threads: 24

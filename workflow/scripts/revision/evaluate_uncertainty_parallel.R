@@ -132,12 +132,18 @@ evaluate_uncertainty_parallel <- function(inferobj, n.permute, mc.cores = 1L,
 
   results <- mclapply(seq_len(n.permute), one_perm,
                       mc.cores = mc.cores, mc.preschedule = FALSE)
-  fail <- vapply(results, inherits, logical(1), what = "try-error")
-  if (any(fail)) {
-    first <- results[[which(fail)[1]]]
-    stop(sprintf("%d permutation(s) failed; first error: %s",
-                 sum(fail), attr(first, "condition")$message))
-  }
+  # Drop pathological bootstrap resamples (a rare degenerate tree throws, e.g.
+  # "subscript out of bounds"); use the number of SUCCESSFUL permutations as the
+  # denominator for the rates rather than aborting the whole run.
+  ok <- !vapply(results, function(r) is.null(r) || inherits(r, "try-error"),
+                logical(1))
+  n.fail <- sum(!ok)
+  if (n.fail > 0)
+    message(sprintf("WARNING: %d/%d permutations failed and were dropped",
+                    n.fail, n.permute))
+  results <- results[ok]
+  n.ok <- length(results)
+  if (n.ok == 0) stop("all permutations failed")
   corr.score   <- lapply(results, `[[`, "corr.score")
   reproduce.js <- unlist(lapply(results, `[[`, "reproduce.js"))
   reproduce.oc <- unlist(lapply(results, `[[`, "reproduce.oc"))
@@ -146,15 +152,15 @@ evaluate_uncertainty_parallel <- function(inferobj, n.permute, mc.cores = 1L,
   js.perc <- rep(0, length(newbranch))
   if (length(reproduce.js))
     js.perc[as.numeric(names(table(reproduce.js)))] <-
-      table(reproduce.js) / n.permute
+      table(reproduce.js) / n.ok
   names(js.perc) <- newbranch
   oc.perc <- rep(0, length(newbranch))
   if (length(reproduce.oc))
     oc.perc[as.numeric(names(table(reproduce.oc)))] <-
-      table(reproduce.oc) / n.permute
+      table(reproduce.oc) / n.ok
   names(oc.perc) <- newbranch
   corr.score.m <- do.call(rbind, corr.score)
-  corr.score.v <- colSums(corr.score.m) / n.permute
+  corr.score.v <- colSums(corr.score.m) / n.ok
   names(corr.score.v) <- newbranch
   detection.rate <- data.frame(
     detection.rate = (js.perc + oc.perc[names(js.perc)]) / 2,
