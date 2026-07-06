@@ -33,6 +33,27 @@ rule revision_infer_tree_fixedclusters:
         "../scripts/revision/infer_tree_fixedclusters.R"
 
 
+# n-matched Variant A: identical to the above but every group bootstraps the same
+# number of cells (min group size = n_wt = 2813), removing the total-n confound so
+# joint/wt/db detection rates are strictly comparable. (wt is unchanged since it
+# is the smallest; only joint and db are subsampled per draw.)
+rule revision_infer_tree_fixedclusters_nmatched:
+    input:
+        cells=config["inputs"]["cells"],
+        joint=rules.infer_tree.output,
+    output:
+        tree="results/revision/lamian_fixedclusters_nmatched/{cond}/tree.rds",
+        edges="results/revision/lamian_fixedclusters_nmatched/{cond}/edge_detection.csv",
+    params:
+        n_permute=1000,
+        seed=42,
+        n_match=2813,
+    wildcard_constraints:
+        cond="wt|db|joint",
+    script:
+        "../scripts/revision/infer_tree_fixedclusters.R"
+
+
 # Variant C ("most independent"): per-condition trajectory in a CONDITION-SPECIFIC
 # PC space (re-embed HVGs/scaling/PCA on each condition, then native Lamian).
 rule revision_infer_tree_condpca:

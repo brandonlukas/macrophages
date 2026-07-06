@@ -108,12 +108,20 @@ clu_used <- clu
 cond_edges <- canon_edges(mcl$MSTtree)
 
 # ---- bootstrap edge detection (fixed clusters, no re-kmeans) ----------------
+# Draw size: default is the classic n-out-of-n bootstrap (draw = group size). If
+# `n_match` is supplied, draw that many cells instead, so joint/wt/db all bootstrap
+# the SAME number of cells and detection rates are comparable free of the total-n
+# confound (detection rises with n).
+n_match <- snakemake@params[["n_match"]] # NULL when not set
+n_draw <- if (is.null(n_match)) nrow(pr_used) else min(n_match, nrow(pr_used))
+message(sprintf("[%s] bootstrap draw size: %d of %d cells", condition, n_draw, nrow(pr_used)))
+
 set.seed(seed)
 rng <- sample.int(.Machine$integer.max, n_permute)
 counts <- integer(0)
 for (b in seq_len(n_permute)) {
   set.seed(rng[b])
-  idx <- sample(seq_len(nrow(pr_used)), nrow(pr_used), replace = TRUE)
+  idx <- sample(seq_len(nrow(pr_used)), n_draw, replace = TRUE)
   # a cluster can vanish from a bootstrap draw only if very rare; guard it.
   eb <- tryCatch(build_edges(pr_used[idx, , drop = FALSE], clu_used[idx]),
                  error = function(e) character(0))

@@ -9,6 +9,22 @@
 
 ---
 
+## Recommended presentation to the reviewer (keep it short)
+
+A reviewer wants to see that the concern was taken seriously and resolved — not a three-variant methods tour. Recommend **one short paragraph + one supplementary figure + one supplementary table**, and keep everything else (the second method, n-matching, the discarded variant, procedure details) in reserve for a possible second round.
+
+**Lead with the intuitive test (Variant C).** For a biology-oriented reader, "we re-ran the entire trajectory analysis separately on ND and DB and recovered the same structure" is the clearest statement. Use Variant A (fixed-cluster edge reconstruction) as *one sentence* of independent, edge-level confirmation — don't make the reviewer follow the MST/bootstrap machinery.
+
+Suggested response text (adapt):
+
+> To test whether the trajectory is robust to the joint ND+DB inference, we re-inferred it independently for each condition. Re-computing the embedding and trajectory *de novo* within each condition reproduced the joint pseudotime ordering (Spearman ρ = 0.85 non-diabetic, 0.74 diabetic; Fig. S#), including the reparative path and the APC transition. An independent edge-level check that holds the cell-state definitions fixed gave the same result: the core trajectory backbone is recovered with near-unity bootstrap support in both conditions. The only branch differences involve clusters sparsely populated in a given condition (e.g. the ND/D3-dominant cluster 12 in diabetic cells) — i.e. the differences reflect cluster occupancy, exactly as the reviewer notes, rather than distinct trajectories. We now state this explicitly and present the per-condition inference in Fig. S# / Table S#.
+
+**Supplement:** Fig S# = the three-panel shared-layout figure (reference / ND / DB), clusters + pseudotime; Table S# = the concordance numbers (ρ, detection). Hold in reserve unless pressed: Variant A's full edge table, the n-matched baseline, and the note on condition-specific vs joint PCA.
+
+**One caveat to state honestly (one clause):** diabetic pseudotime tracks real time only weakly (ρ = 0.13 vs 0.34 in ND) — acknowledge DB is noisier while its ordering still matches the joint. Cheap to say, and pre-empts the obvious follow-up.
+
+---
+
 ## Data and gate
 
 Cells with a trajectory cluster label (`clusterid`, the Lamian k-means nodes = manuscript clusters 1–12): 6,109 (ND 2,813; DB 3,296). Origin is `D3` (`infer_tree_structure(origin.celltype = "D3")`).
@@ -52,7 +68,7 @@ This bootstrap is **not** Lamian's `evaluate_uncertainty`: Lamian resamples cell
 
 The **7-edge core backbone sits at detection ≈ 1.0 in all three** under the identical procedure — including the **APC branch (6→7→5)** and the **reparative path (6→9→3→4→8, 3→10)**. Both conditions reconstruct 9/11 joint edges. The edges a condition drops are either (i) into clusters **sparse in that condition** (1–4 in ND, 6–12 in DB) or (ii) edges that are **already the weakest in the joint itself** (2–6 at .687, 1–11 at .82). Conditions do not break *strong* joint edges; the condition-specific rewirings are themselves reproducible (high detection).
 
-> Caveat: n differs (joint 6109; ND 2813; DB 3296) and detection rises with n, so the joint is an *upper* reference — the clean like-for-like contrast is ND vs DB (comparable n). An n-matched joint (subsample to condition size) can be added if a strict baseline is wanted.
+> Fairness / n-matching: because n differs (joint 6109; ND 2813; DB 3296) and detection rises with n, we reran the identical bootstrap with **every group drawing the same 2813 cells** (`revision_infer_tree_fixedclusters_nmatched`, = min group size). The picture is unchanged: core 7 edges still 1.0 in all three; DB still drops 6–12 (0.083) *even when subsampled below its own size*, ND still drops 1–4. The condition-specific drops are therefore driven by per-cluster occupancy, **not** total-n. (The remaining occupancy confound is intrinsic and is the reviewer's actual question — detection here means "can the condition stably *place* this edge given how many cells it has there," not "the condition's biology lacks this edge.")
 
 ### Variant C — re-infer everything in a condition-specific PC space (most independent)
 
@@ -86,6 +102,7 @@ Heavy compute lives in this repo (`workflow/rules/revision.smk`), lightweight po
 | | rule | output |
 |---|---|---|
 | Variant A | `revision_infer_tree_fixedclusters` | `results/revision/lamian_fixedclusters/{joint,wt,db}/{tree.rds, edge_detection.csv}` |
+| Variant A (n-matched) | `revision_infer_tree_fixedclusters_nmatched` | `results/revision/lamian_fixedclusters_nmatched/{joint,wt,db}/…` (all groups draw 2813 cells) |
 | Variant C | `revision_infer_tree_condpca` → `revision_evaluate_uncertainty_condpca` | `results/revision/lamian_condpca/{wt,db}/{infer_tree,evaluate_uncertainty}.rds` |
 
 Post-processing / figures (moma): `src/revision/occupancy_table.R`, `src/revision/trajectory_concordance.R` (variant C vs joint), `make_figures/revision/umaps_trajectory_conditions.R` (variant C on the shared PGD layout).

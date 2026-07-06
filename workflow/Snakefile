@@ -71,5 +71,9 @@ rule all:
             cond=["joint", "wt", "db"],
         ),
         expand(
+            rules.revision_infer_tree_fixedclusters_nmatched.output,
+            cond=["joint", "wt", "db"],
+        ),
+        expand(
             rules.revision_evaluate_uncertainty_condpca.output, cond=["wt", "db"]
         ),
