@@ -28,7 +28,7 @@ rule revision_infer_tree_fixedclusters:
         n_permute=1000,
         seed=42,
     wildcard_constraints:
-        cond="wt|db",
+        cond="wt|db|joint",
     script:
         "../scripts/revision/infer_tree_fixedclusters.R"
 

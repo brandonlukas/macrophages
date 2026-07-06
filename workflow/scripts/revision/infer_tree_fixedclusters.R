@@ -56,7 +56,15 @@ build_edges <- function(prm, clum) {
 }
 
 # ---- subset to condition ----------------------------------------------------
-keep <- colnames(cells)[cells$condition == condition]
+# cond == "joint" runs the SAME fixed-cluster bootstrap on ALL ND+DB cells, to
+# give a matched baseline for the per-condition detection rates (the joint tree's
+# published detection rates come from Lamian's re-kmeans procedure, which is not
+# comparable to this fixed-cluster resampling).
+keep <- if (condition == "joint") {
+  colnames(cells)
+} else {
+  colnames(cells)[cells$condition == condition]
+}
 pr <- cells@reductions$pca@cell.embeddings[keep, seq_len(pcadim), drop = FALSE]
 clu <- joint_clu[keep]
 stopifnot(!anyNA(clu), all(rownames(pr) == names(clu)))

@@ -30,20 +30,29 @@ The trajectory involves three ingredients that could be held fixed or re-derived
 
 ### Variant A — hold the joint clusters + joint PC space FIXED (collaborator request)
 
-Reuse the joint cluster labels (fork's `infer_tree_structure(clusters = ...)`; verified `TSCAN::exprmclust(cluster = ...)` preserves labels), subset to one condition, and refit **only** the cluster-center minimum spanning tree in the **same 10 PCs** the joint tree uses (`ncol(joint$pca) == 10`). Because the MST is forced to span all 12 clusters, the point estimate alone is not evidence — the test is the **bootstrap detection rate** (resample the condition's cells → recompute centers with the *same* labels → rebuild MST → how often does each edge recur, over 1,000 resamples). Trees are directly comparable across joint/ND/DB because the labels match.
+Reuse the joint cluster labels (fork's `infer_tree_structure(clusters = ...)`; verified `TSCAN::exprmclust(cluster = ...)` preserves labels), subset to one condition, and refit **only** the cluster-center minimum spanning tree in the **same 10 PCs** the joint tree uses (`ncol(joint$pca) == 10`). Because the MST is forced to span all 12 clusters, the point estimate alone is not evidence — the test is the **bootstrap detection rate** (resample the cells → recompute centers with the *same* labels → rebuild MST → how often does each edge recur, over 1,000 resamples). Trees are directly comparable across joint/ND/DB because the labels match.
+
+This bootstrap is **not** Lamian's `evaluate_uncertainty`: Lamian resamples cells *and re-runs k-means* each iteration (cells get relabeled, branches matched back by Jaccard/overlap), capturing sampling **and** clustering instability. Here the clustering is fixed by design, so we run the same fixed-cluster resampling on the **joint ND+DB cells too** (`cond = "joint"`), giving a procedure-matched baseline to compare the per-condition detection rates against.
 
 > Implementation note: the PC dimension must be held at the joint's value (10). Letting Lamian's elbow re-pick it on a subset collapses to ~2 PCs and turns the comparison into a dimensionality artifact.
 
-**Result — both conditions reconstruct 9 / 11 joint edges.** A 7-edge **core backbone is recovered in *both* with detection ≈ 1.0**:
+**Result — matched fixed-cluster edge detection (1,000 resamples each):**
 
-`3–4, 3–9, 3–10, 4–8, 5–7, 6–7, 6–9`
+| edge | joint | ND (wt) | DB (db) | |
+|---|---|---|---|---|
+| 3–9, 4–8, 5–7, 6–7, 6–9 | 1.0 | 1.0 | 1.0 | **core — maximally stable everywhere** |
+| 3–10 | 1.0 | 1.0 | .978 | solid everywhere |
+| 3–4 | .983 | 1.0 | .995 | solid everywhere |
+| 1–4 | 1.0 | **.002** | .999 | drops in ND (cl 1 is DB-dominated) |
+| 6–12 | .999 | .99 | **.064** | drops in DB (cl 12 is ND/D3-dominant, ~61 DB cells) |
+| 1–11 | **.82** | .004 | .729 | already marginal in joint (cl 11 tiny) |
+| 2–6 | **.687** | 1.0 | .004 | already the weakest joint edge |
+| 1–3 / 5–11 (ND-only) | — | .998 / .849 | — | ND rewiring of its sparse clusters |
+| 2–12 / 10–12 (DB-only) | — | — | .959 / .864 | DB rewiring of its sparse clusters |
 
-This includes the **APC branch (6→7→5)** and the **reparative path (6→9→3→4→8, 3→10)**. The only joint edges that fail are into clusters sparse in that condition, and the *rewirings are themselves reproducible* (high detection), so they are real local topology, not noise:
+The **7-edge core backbone sits at detection ≈ 1.0 in all three** under the identical procedure — including the **APC branch (6→7→5)** and the **reparative path (6→9→3→4→8, 3→10)**. Both conditions reconstruct 9/11 joint edges. The edges a condition drops are either (i) into clusters **sparse in that condition** (1–4 in ND, 6–12 in DB) or (ii) edges that are **already the weakest in the joint itself** (2–6 at .687, 1–11 at .82). Conditions do not break *strong* joint edges; the condition-specific rewirings are themselves reproducible (high detection).
 
-| condition | joint edges dropped (detection) | stably rewired to (detection) | sparse cluster involved |
-|---|---|---|---|
-| ND (wt) | 1–4 (.002), 1–11 (.004) | 1–3 (.998), 5–11 (.849) | cl 1 is DB-dominated; cl 11 tiny |
-| DB (db) | 6–12 (.064), 2–6 (.004) | 2–12 (.959), 10–12 (.864) | cl 12 is ND/D3-dominant (~61 DB cells) |
+> Caveat: n differs (joint 6109; ND 2813; DB 3296) and detection rises with n, so the joint is an *upper* reference — the clean like-for-like contrast is ND vs DB (comparable n). An n-matched joint (subsample to condition size) can be added if a strict baseline is wanted.
 
 ### Variant C — re-infer everything in a condition-specific PC space (most independent)
 
@@ -76,7 +85,7 @@ Heavy compute lives in this repo (`workflow/rules/revision.smk`), lightweight po
 
 | | rule | output |
 |---|---|---|
-| Variant A | `revision_infer_tree_fixedclusters` | `results/revision/lamian_fixedclusters/{wt,db}/{tree.rds, edge_detection.csv}` |
+| Variant A | `revision_infer_tree_fixedclusters` | `results/revision/lamian_fixedclusters/{joint,wt,db}/{tree.rds, edge_detection.csv}` |
 | Variant C | `revision_infer_tree_condpca` → `revision_evaluate_uncertainty_condpca` | `results/revision/lamian_condpca/{wt,db}/{infer_tree,evaluate_uncertainty}.rds` |
 
 Post-processing / figures (moma): `src/revision/occupancy_table.R`, `src/revision/trajectory_concordance.R` (variant C vs joint), `make_figures/revision/umaps_trajectory_conditions.R` (variant C on the shared PGD layout).
