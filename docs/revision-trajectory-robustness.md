@@ -8,7 +8,7 @@
 **Short answer.** Yes for the parts that matter. We re-infer the trajectory independently within each condition and, because the inference has run-to-run variability (below), report it as an **ensemble of 10 independent draws** rather than one tree. Two things are stable across the ensemble:
 
 - **Overall ordering:** the per-condition pseudotime tracks the joint ordering — non-diabetic in every draw (Spearman ρ 0.67–0.88, median 0.80), diabetic in most (ρ up to 0.74, median 0.70, 7/10 draws ≥ 0.5).
-- **The edges that matter:** every joint trajectory edge is recovered above a random-overlap null in **10/10 draws of both conditions**, and the **APC branch edges (6→7 and 7→5) are among the most reproducible** — mean cell-Jaccard 0.65–0.79, overlap coefficient 0.86–0.97.
+- **The edges that matter:** the **APC branch edges (6→7 and 7→5) are among the most reproducible.** By Lamian's own detection score (one-to-one cell-overlap matching, averaging Jaccard- and overlap-based detection), **7→5 is recovered in 10/10 draws of both conditions** and **6→7 in ~8–9/10** (mean cell-Jaccard 0.65–0.79, overlap coefficient 0.86–0.97).
 
 Where draws disagree, it is on edges into clusters that are **sparsely populated in that condition** — i.e. occupancy, exactly as the reviewer suggests, not a different trajectory.
 
@@ -20,7 +20,7 @@ Where draws disagree, it is on edges into clusters that are **sparsely populated
 
 Suggested response text (adapt):
 
-> To test whether the trajectory depends on the joint ND+DB inference, we re-inferred it independently within each condition (condition-specific embedding and clustering, nothing borrowed from the joint analysis). Because the clustering step has run-to-run variability, we repeated the inference 10 times per condition and assessed reproducibility across the ensemble. The non-diabetic pseudotime reproduces the joint ordering in every draw (Spearman ρ 0.67–0.88); the diabetic ordering reproduces it in most draws (median ρ 0.70). Critically, the trajectory edges central to the paper — the APC branch 6→7→5 — are recovered in all 10 draws of both conditions (cell-level Jaccard 0.65–0.79 with the joint edge; Fig. S#/Table S#). The edges that vary between draws are those into clusters sparsely populated in a given condition, i.e. cluster-occupancy differences (Table S#), not a distinct trajectory. We report the per-condition inference as an ensemble because Lamian's clustering is not deterministic (its `kmeans.seed` is a no-op in the released code); we pass seeds but do not alter the package source.
+> To test whether the trajectory depends on the joint ND+DB inference, we re-inferred it independently within each condition (condition-specific embedding and clustering, nothing borrowed from the joint analysis). Because the clustering step has run-to-run variability, we repeated the inference 10 times per condition and assessed reproducibility across the ensemble. The non-diabetic pseudotime reproduces the joint ordering in every draw (Spearman ρ 0.67–0.88); the diabetic ordering reproduces it in most draws (median ρ 0.70). Critically, the trajectory edges central to the paper — the APC branch 6→7→5 — reproduce robustly: by a Lamian-style cell-overlap detection score the 7→5 edge is recovered in all 10 draws of both conditions and 6→7 in ~8–9/10 (cell-level Jaccard 0.65–0.79 with the joint edge; Fig. S#/Table S#). The edges that vary between draws are those into clusters sparsely populated in a given condition, i.e. cluster-occupancy differences (Table S#), not a distinct trajectory. We report the per-condition inference as an ensemble because Lamian's clustering is not deterministic (its `kmeans.seed` is a no-op in the released code); we pass seeds but do not alter the package source.
 
 **Supplement:** Fig S# = per-condition inference on the shared layout; Table S# = per-edge reproducibility (Jaccard / detection across draws) + the occupancy table (R1-3).
 
@@ -58,18 +58,22 @@ ND recovers the joint ordering in every draw; DB in most (a minority of DB draws
 
 ### 2. Edge reproducibility (Lamian-style cell-Jaccard)
 
-Because draws have different cluster labels/counts, edges are matched by the **cells on them**, exactly as Lamian's `evaluate_uncertainty` scores branches across bootstraps. For each joint MST edge (a–b), restricted to one condition's cells, `Sj` = cells whose *joint* cluster is a or b; for each draw edge, `Sd` = cells whose *draw* cluster is one of its endpoints; the edge's score in a draw is the best `Jaccard(Sj, Sd)`. Detection = best Jaccard ≥ a per-edge null (99th percentile vs random cell sets of size |Sj|, the same null Lamian uses). See `condpca_edge_detection.csv`.
+Because draws have different cluster labels/counts, edges are matched by the **cells on them**, exactly as Lamian's `evaluate_uncertainty` scores branches across bootstraps. For each joint MST edge (a–b), restricted to one condition's cells, `Sj` = cells whose *joint* cluster is a or b; for each draw edge, `Sd` = cells whose *draw* cluster is one of its endpoints. We reproduce Lamian's detection exactly (`condpca_edge_detection.csv`):
 
-**All joint edges are detected in 10/10 draws of both conditions** (every edge beats the random-overlap null every time). The **magnitude** of the cell-overlap is the informative signal — and it is highest for the backbone and the APC branch, lowest for edges into sparse clusters:
+- per-edge null cutoffs `js.cut` / `oc.cut` = 99th percentile of Jaccard / overlap-coefficient against random cell sets of size |Sj| (Lamian's `js.null`/`oc.null`);
+- within each draw, threshold the [draw-edge × joint-edge] Jaccard and overlap matrices and resolve to a **one-to-one** matching with Lamian's `get_binary`;
+- `detection = (js.perc + oc.perc)/2` — the average of the Jaccard- and overlap-based detection fractions across the 10 draws, capped at 1 (Lamian's own formula).
 
-| edge | condition | mean Jaccard | overlap | note |
+The **detection rate** and the **cell-overlap magnitude** both rank the APC branch and reparative backbone highest and the sparse-cluster edges lowest:
+
+| edge | condition | mean Jaccard | overlap | detection (js+oc)/2 |
 |---|---|---|---|---|
-| **5–7** (APC) | db / wt | 0.79 / 0.69 | 0.94 / 0.97 | APC transition — strongly reproduced |
-| **6–7** (APC) | db / wt | 0.70 / 0.65 | 0.92 / 0.86 | APC transition — strongly reproduced |
-| 3–4, 4–8, 3–10, 3–9 | both | 0.5–0.77 | 0.74–1.0 | reparative backbone — reproduced |
-| 2–6, 6–12, 1–11, 1–4 | both | **0.19–0.36** | — | into sparse clusters — weakest |
+| **7–5** (APC) | db / wt | 0.79 / 0.69 | 0.94 / 0.97 | **1.00 / 1.00** |
+| **6–7** (APC) | db / wt | 0.70 / 0.65 | 0.92 / 0.86 | **0.85 / 0.75** |
+| 3–4, 4–8, 3–10, 3–9 | both | 0.5–0.77 | 0.74–1.0 | 0.5–1.0 |
+| 2–6, 6–12, 1–11, 1–4 | both | **0.19–0.36** | 0.6–0.9 | **0.0–0.45** |
 
-The APC edges the paper depends on (6→7→5) are among the most reproducible in both conditions. The weak edges are exactly those into clusters underpopulated in that condition (cl 11 = 61 cells; cl 12, 2 sparse in DB / ND respectively) — an occupancy effect (ties to R1-3), not a broken trajectory.
+The APC edges the paper depends on (6→7→5) are the most reproducible in both conditions — 7→5 in all 10 draws, 6→7 in ~8–9/10 (it competes with the adjacent 7→5 edge under the one-to-one matching, since they share cluster 7). The weak edges are exactly those into clusters underpopulated in that condition (cl 11 = 61 cells; cl 12 / cl 2 sparse in DB / ND) — an occupancy effect (ties to R1-3), not a broken trajectory. (The two metrics are complementary: e.g. ND 4→8 has low Jaccard but ~1.0 overlap because cl 8 is tiny — Lamian's averaging is what keeps such small-cluster edges detectable.)
 
 ---
 
@@ -95,4 +99,4 @@ Each draw's `infer_tree.rds` also carries `res$pca_full` — the full 50-dim con
 
 Post-processing / figures (moma): `src/revision/occupancy_table.R` (R1-3), `src/revision/trajectory_concordance.R`, `make_figures/revision/umaps_trajectory_conditions.R`.
 
-Notes: Lamian's `pseudotime`/`clusterid` repeat shared backbone cells once per branch — dedupe per cell before joins. Joint MST edges come from `igraph::as_edgelist(joint$MSTtree)`; per-draw edges likewise. The edge-reproducibility null mirrors Lamian's `js.cut` (99th percentile of Jaccard vs random cell sets of matched size).
+Notes: Lamian's `pseudotime`/`clusterid` repeat shared backbone cells once per branch — dedupe per cell before joins. Joint MST edges come from `igraph::as_edgelist(joint$MSTtree)`; per-draw edges likewise. Edge detection reproduces Lamian's `evaluate_uncertainty` exactly: per-edge `js.cut`/`oc.cut` nulls (99th percentile of Jaccard/overlap vs size-matched random cell sets), one-to-one matching via `Lamian:::get_binary`, and `detection = (js.perc + oc.perc)/2`. It is pure post-processing of the saved draws (no re-inference).
