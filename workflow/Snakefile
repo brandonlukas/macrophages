@@ -65,9 +65,10 @@ rule all:
         expand(rules.pgd_aggregate_mc_transitions_overexpress.output, step=[0, 100, 200, 300, 400, 500]),
         rules.whitelist_experiments.output,
         # npj revision — per-condition trajectory compute (T1)
-        # Variant C (condition-specific PCA) + reproducibility stability sweep
+        # Variant C: 10-draw condition-specific PCA ensemble + edge reproducibility
         expand(
-            rules.revision_evaluate_uncertainty_condpca.output, cond=["wt", "db"]
+            rules.revision_condpca_draw.output,
+            cond=["wt", "db"],
+            seed=CONDPCA_SEEDS,
         ),
-        rules.revision_condpca_stability.output,
-        rules.revision_condpca_consensus.output,
+        rules.revision_condpca_edge_detection.output,

@@ -1,27 +1,27 @@
 # Revision task T1 (variant C, "most independent") — per-condition trajectory in a
-# CONDITION-SPECIFIC PC space.
+# CONDITION-SPECIFIC PC space. One draw of the ensemble (see revision_condpca_draw):
+# we run this repeatedly over {seed} and report the spread honestly.
 #
-# This recomputes the whole embedding on one condition's cells — HVGs, scaling,
-# PCA — then runs Lamian natively (elbow picks pcadim, kmeans reclusters). It
-# answers the strongest form of the reviewer's question: does the trajectory
-# exist when NOTHING is borrowed from the joint analysis?
+# Recompute the whole embedding on one condition's cells — HVGs, scaling, PCA —
+# then run Lamian natively (elbow picks pcadim, kmeans re-clusters). It answers the
+# strongest form of the reviewer's question: does the trajectory exist when NOTHING
+# is borrowed from the joint analysis?
 #
-# Consequence (acknowledged limitation): the PC space, cluster labels and
-# pseudotime are condition-specific and NOT directly comparable across conditions
-# or to the joint — comparison is only via shared-cell pseudotime rank
-# concordance and branch topology (src/revision/trajectory_concordance.R).
+# Reproducibility caveat (stated to the reviewer, NOT patched here): Lamian's
+# infer_tree_structure clustering is not reproducible — its internal mykmeans
+# ignores the `kmeans.seed` argument (there is no set.seed in its body) and selects
+# the cluster number inside an unseeded parallel fork. We pass seeds exactly as the
+# main pipeline does (workflow/scripts/lamian/infer_tree.R) so the intent is on the
+# record, but we deliberately do NOT modify Lamian's source. Consequently each draw
+# is an independent sample; robustness is reported across the ensemble of draws
+# (per-draw metrics + edge-level cell-Jaccard reproducibility), not from one tree.
 #
 # Mirrors workflow/scripts/lamian/infer_tree.R; the only additions are the
-# condition subset and the per-condition re-embedding.
+# condition subset, the per-condition re-embedding, and saving the full PCA.
 
 library(tidyverse)
 library(Seurat)
 library(Lamian)
-
-# Make Lamian's internal k-means reproducible (its shipped mykmeans ignores its
-# seed and forks an unseeded cluster-number search). Without this the trajectory
-# is not reproducible run-to-run. See the helper for the full rationale.
-source("workflow/scripts/revision/reproducible_kmeans.R")
 
 input_cells <- snakemake@input[[1]]
 output_file <- snakemake@output[[1]]
@@ -29,9 +29,6 @@ condition <- snakemake@wildcards[["cond"]]
 seed_1 <- snakemake@params[["seed_1"]]
 seed_2 <- snakemake@params[["seed_2"]]
 npcs <- snakemake@params[["npcs"]]
-nstart <- snakemake@params[["nstart"]]
-
-install_reproducible_kmeans(nstart)
 
 cells <- readRDS(input_cells)
 
@@ -62,6 +59,8 @@ cellanno <- sub@meta.data %>%
   ) %>%
   select(cell, sample, timepoint)
 
+# Seeds passed exactly as the main pipeline does. NB: kmeans.seed is a dead Lamian
+# parameter (see caveat above); {seed} still varies the draw via ambient RNG.
 set.seed(seed_1)
 res <- infer_tree_structure(
   pca = pca,
@@ -70,9 +69,9 @@ res <- infer_tree_structure(
   kmeans.seed = seed_2
 )
 
-# infer_tree_structure truncates to the elbow-selected dims and stores only those
-# in res$pca (ncol == pcadim). Keep the full npcs-dim input embedding too, so the
-# complete condition-specific PC space is recoverable downstream.
+# infer_tree_structure stores only the elbow-truncated PCA in res$pca (ncol ==
+# pcadim). Keep the full npcs-dim condition-specific embedding too (deterministic;
+# used e.g. for PGD on the condition's PC space).
 res$pca_full <- pca
 
 saveRDS(res, output_file)
