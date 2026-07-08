@@ -65,15 +65,7 @@ rule all:
         expand(rules.pgd_aggregate_mc_transitions_overexpress.output, step=[0, 100, 200, 300, 400, 500]),
         rules.whitelist_experiments.output,
         # npj revision — per-condition trajectory compute (T1)
-        # Variant A (fixed joint clusters) + Variant C (condition-specific PCA)
-        expand(
-            rules.revision_infer_tree_fixedclusters.output,
-            cond=["joint", "wt", "db"],
-        ),
-        expand(
-            rules.revision_infer_tree_fixedclusters_nmatched.output,
-            cond=["joint", "wt", "db"],
-        ),
+        # Variant C (condition-specific PCA)
         expand(
             rules.revision_evaluate_uncertainty_condpca.output, cond=["wt", "db"]
         ),

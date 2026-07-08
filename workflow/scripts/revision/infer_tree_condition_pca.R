@@ -1,11 +1,10 @@
 # Revision task T1 (variant C, "most independent") — per-condition trajectory in a
 # CONDITION-SPECIFIC PC space.
 #
-# Unlike variant A (joint PCs + joint clusters held fixed) and variant B (joint
-# PCs, reclustered), this recomputes the whole embedding on one condition's cells
-# — HVGs, scaling, PCA — then runs Lamian natively (elbow picks pcadim, kmeans
-# reclusters). It answers the strongest form of the reviewer's question: does the
-# trajectory exist when NOTHING is borrowed from the joint analysis?
+# This recomputes the whole embedding on one condition's cells — HVGs, scaling,
+# PCA — then runs Lamian natively (elbow picks pcadim, kmeans reclusters). It
+# answers the strongest form of the reviewer's question: does the trajectory
+# exist when NOTHING is borrowed from the joint analysis?
 #
 # Consequence (acknowledged limitation): the PC space, cluster labels and
 # pseudotime are condition-specific and NOT directly comparable across conditions
@@ -62,5 +61,10 @@ res <- infer_tree_structure(
   origin.celltype = "D3",
   kmeans.seed = seed_2
 )
+
+# infer_tree_structure truncates to the elbow-selected dims and stores only those
+# in res$pca (ncol == pcadim). Keep the full npcs-dim input embedding too, so the
+# complete condition-specific PC space is recoverable downstream.
+res$pca_full <- pca
 
 saveRDS(res, output_file)

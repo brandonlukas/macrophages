@@ -6,52 +6,10 @@
 # pseudotime extraction, joint-vs-condition concordance stats, and the figures —
 # lives in the moma repo (~/code/timkoh/moma), which reads box/results/revision/.
 #
-# {cond} in {wt, db}: wt = non-diabetic, db = diabetic. Two complementary tests of
-# whether the joint ND+DB trajectory reproduces per condition:
-#   A = hold the joint clusters + joint PC space FIXED (collaborator request),
-#   C = re-infer everything in a condition-specific PC space (most independent).
+# {cond} in {wt, db}: wt = non-diabetic, db = diabetic. Test of whether the joint
+# ND+DB trajectory reproduces per condition by re-inferring everything in a
+# condition-specific PC space (the "most independent" test).
 # See docs/revision-trajectory-robustness.md.
-
-
-# Variant A (PI/collaborator request): per-condition trajectory holding the JOINT
-# clusters FIXED, then bootstrapping the cluster-center MST to get per-edge
-# detection rates (does each condition reconstruct the joint edges, and how
-# reliably). Directly comparable across joint/wt/db because cluster labels match.
-rule revision_infer_tree_fixedclusters:
-    input:
-        cells=config["inputs"]["cells"],
-        joint=rules.infer_tree.output,
-    output:
-        tree="results/revision/lamian_fixedclusters/{cond}/tree.rds",
-        edges="results/revision/lamian_fixedclusters/{cond}/edge_detection.csv",
-    params:
-        n_permute=1000,
-        seed=42,
-    wildcard_constraints:
-        cond="wt|db|joint",
-    script:
-        "../scripts/revision/infer_tree_fixedclusters.R"
-
-
-# n-matched Variant A: identical to the above but every group bootstraps the same
-# number of cells (min group size = n_wt = 2813), removing the total-n confound so
-# joint/wt/db detection rates are strictly comparable. (wt is unchanged since it
-# is the smallest; only joint and db are subsampled per draw.)
-rule revision_infer_tree_fixedclusters_nmatched:
-    input:
-        cells=config["inputs"]["cells"],
-        joint=rules.infer_tree.output,
-    output:
-        tree="results/revision/lamian_fixedclusters_nmatched/{cond}/tree.rds",
-        edges="results/revision/lamian_fixedclusters_nmatched/{cond}/edge_detection.csv",
-    params:
-        n_permute=1000,
-        seed=42,
-        n_match=2813,
-    wildcard_constraints:
-        cond="wt|db|joint",
-    script:
-        "../scripts/revision/infer_tree_fixedclusters.R"
 
 
 # Variant C ("most independent"): per-condition trajectory in a CONDITION-SPECIFIC
