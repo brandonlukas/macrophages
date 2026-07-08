@@ -18,12 +18,20 @@ library(tidyverse)
 library(Seurat)
 library(Lamian)
 
+# Make Lamian's internal k-means reproducible (its shipped mykmeans ignores its
+# seed and forks an unseeded cluster-number search). Without this the trajectory
+# is not reproducible run-to-run. See the helper for the full rationale.
+source("workflow/scripts/revision/reproducible_kmeans.R")
+
 input_cells <- snakemake@input[[1]]
 output_file <- snakemake@output[[1]]
 condition <- snakemake@wildcards[["cond"]]
 seed_1 <- snakemake@params[["seed_1"]]
 seed_2 <- snakemake@params[["seed_2"]]
 npcs <- snakemake@params[["npcs"]]
+nstart <- snakemake@params[["nstart"]]
+
+install_reproducible_kmeans(nstart)
 
 cells <- readRDS(input_cells)
 
