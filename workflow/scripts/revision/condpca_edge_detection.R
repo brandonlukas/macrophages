@@ -20,26 +20,32 @@
 #     one-to-one matching via Lamian:::get_binary, detection.rate = (js+oc)/2.
 #
 # (B) Calibrated significance of the best-match magnitude (NEW). The observed
-#     statistic is a MAX over the draw's k edges, so a single-set null is
-#     anti-conservative. We use a BEST-OF-k null: the max of k independent
-#     size-|Sj| random-set Jaccards. Because a size-matched random set's
-#     intersection with Sj is hypergeometric, the single-set Jaccard null is
-#     analytic (no sampling), and the best-of-k 99th-pct cutoff is the
-#     (0.99^(1/k))-quantile of that single-set null. With this cutoff each draw
-#     has a 1% false-positive rate under H0, so the number of the n_draws that
-#     recover an edge is Binomial(n_draws, 0.01) under H0. That gives a per-edge
-#     combined p-value (p_binom), Benjamini-Hochberg adjusted across all
-#     edge x condition tests (p_bh). k is the per-condition median edge count.
-#     Caveat: the draws share the embedding and differ only by k-means
-#     initialization, so they are not fully independent replicates.
+#     statistic is a MAX over a run's k edges, so a single-set null is
+#     anti-conservative. We use a BEST-OF-k null: the max of k size-|Sj|
+#     random-set Jaccards. A size-matched random set's intersection with Sj is
+#     Hypergeometric(|Sj|, N-|Sj|, |Sj|), so the single-set Jaccard null and its
+#     best-of-k tail are ANALYTIC (no sampling). k is the per-condition median
+#     edge count.
+#       - js_bok_cut = best-of-k 99th-pct cutoff (the calibrated chance level).
+#       - For each run, p_run = P(best-of-k null >= observed best-match), an exact
+#         permutation p for that single run.
+#       - p_run_worst = the LEAST significant run's p; an edge that clears this is
+#         recovered above chance in every run. p_bh = Benjamini-Hochberg across all
+#         edge x condition tests.
+#     We deliberately do NOT combine the runs into one multiplied p-value: the
+#     runs share the (deterministic) embedding and differ only by k-means
+#     initialization, so they are repeated runs of a stochastic algorithm, not
+#     independent replicates. Each run's permutation p is valid on its own; the
+#     worst-run p is a conservative, independence-free summary.
 #
 # Pure post-processing of the saved draws; does NOT re-infer any trajectory.
 #
 # Outputs:
 #   manifest — per (condition, seed): cluster count, joint pseudotime concordance.
 #   edges    — per (condition, joint edge): best Jaccard/overlap magnitude, single
-#              -set + best-of-k null cutoffs, js/oc/averaged detection rate,
-#              best-of-k detection count, binomial p and BH-adjusted p. APC flagged.
+#              -set + best-of-k null cutoffs, js/oc/averaged detection rate, count
+#              of runs recovered, worst-run permutation p and BH-adjusted p across
+#              edges. APC flagged.
 
 library(tidyverse)
 library(igraph)
@@ -79,6 +85,15 @@ bok_jaccard_cut <- function(m, N, k, level = NULL_LEVEL) {
   q <- level^(1 / k)
   I <- qhyper(q, m = m, n = N - m, k = m)
   I / (2 * m - I)
+}
+
+# Exact best-of-k permutation p: P(max of k size-m random-set Jaccards >= j).
+# Jaccard monotone in I, so null >= j  <=>  I >= i(j), i(j) = ceil(2mj/(1+j)).
+# single-set upper tail u = P(I >= i); best-of-k tail = 1 - (1-u)^k (stable form).
+bok_pvalue <- function(j, m, N, k) {
+  i <- ceiling(2 * m * j / (1 + j))
+  u <- phyper(i - 1, m = m, n = N - m, k = m, lower.tail = FALSE) # P(I >= i)
+  -expm1(k * log1p(-u))
 }
 
 compute_edge_detection <- function(joint_file, draw_files, n_null = 1000, seed = 42) {
@@ -144,9 +159,12 @@ compute_edge_detection <- function(joint_file, draw_files, n_null = 1000, seed =
       oc_detect[d, ] <- detected_edges(om, oc_cut)
     }
 
-    # best-of-k calibrated detection + binomial combined p across draws
-    n_detected_bok <- colSums(sweep(best_j, 2, js_bok_cut, `>=`))
-    p_binom <- pbinom(n_detected_bok - 1, n_draws, 1 - NULL_LEVEL, lower.tail = FALSE)
+    # best-of-k calibrated recovery: count of runs above the cutoff (descriptive)
+    # + the worst (least significant) run's exact best-of-k permutation p.
+    n_runs_recovered <- colSums(sweep(best_j, 2, js_bok_cut, `>=`))
+    p_run_worst <- vapply(seq_along(je), function(e) {
+      max(bok_pvalue(best_j[, e], length(je[[e]]), N, k_rep))
+    }, numeric(1))
 
     js_perc <- colMeans(js_detect); oc_perc <- colMeans(oc_detect)
     edge_rows[[length(edge_rows) + 1]] <- tibble(
@@ -158,14 +176,14 @@ compute_edge_detection <- function(joint_file, draw_files, n_null = 1000, seed =
       js_detect_rate = js_perc, oc_detect_rate = oc_perc,
       detection_rate = pmin((js_perc + oc_perc) / 2, 1),
       k_rep = k_rep, js_bok_cut = js_bok_cut,
-      n_detected_bok = n_detected_bok, p_binom = p_binom,
-      n_draws = n_draws)
+      n_runs_recovered = n_runs_recovered, p_run_worst = p_run_worst,
+      n_runs = n_draws)
   }
 
   manifest_tbl <- bind_rows(manifest) %>% arrange(condition, seed)
-  # BH-FDR across all edge x condition tests
+  # BH-FDR of the worst-run permutation p across all edge x condition tests
   edge_tbl <- bind_rows(edge_rows) %>%
-    mutate(p_bh = p.adjust(p_binom, "BH")) %>%
+    mutate(p_bh = p.adjust(p_run_worst, "BH")) %>%
     arrange(condition, desc(is_APC), desc(jacc_mean))
   list(manifest = manifest_tbl, edges = edge_tbl)
 }
@@ -182,6 +200,6 @@ if (exists("snakemake")) {
   cat("\n=== edge reproducibility (APC first) ===\n")
   res$edges %>%
     mutate(across(c(jacc_mean, jacc_median, jacc_min, overlap_mean, js_cut, oc_cut,
-                    js_bok_cut, p_binom, p_bh), ~signif(., 3))) %>%
+                    js_bok_cut, p_run_worst, p_bh), ~signif(., 3))) %>%
     print(n = Inf, width = Inf)
 }
