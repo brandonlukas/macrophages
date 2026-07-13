@@ -45,14 +45,20 @@
 #   edges    — per (condition, joint edge): best Jaccard/overlap magnitude, single
 #              -set + best-of-k null cutoffs, js/oc/averaged detection rate, count
 #              of runs recovered, worst-run permutation p and BH-adjusted p across
-#              edges. APC flagged.
+#              edges.
 
 library(tidyverse)
 library(igraph)
 library(Lamian) # for get_binary (exact Lamian one-to-one matching)
 library(reshape2)
 
-APC_EDGES <- c("6-7", "5-7")
+joint_file <- snakemake@input[["joint"]]
+draw_files <- unlist(snakemake@input[["draws"]])
+manifest_out <- snakemake@output[["manifest"]]
+edges_out <- snakemake@output[["edges"]]
+n_null <- snakemake@params[["n_null"]]
+seed <- snakemake@params[["seed"]]
+
 NULL_LEVEL <- 0.99 # per-edge / per-draw false-positive rate
 
 edge_key <- function(a, b) paste(sort(as.integer(c(a, b))), collapse = "-")
@@ -96,110 +102,101 @@ bok_pvalue <- function(j, m, N, k) {
   -expm1(k * log1p(-u))
 }
 
-compute_edge_detection <- function(joint_file, draw_files, n_null = 1000, seed = 42) {
-  joint <- readRDS(joint_file)
-  joint_cl_all <- joint$clusterid
-  joint_pt <- enframe(joint$pseudotime, name = "cell", value = "pt_joint") %>%
-    distinct(cell, .keep_all = TRUE)
-  jedges <- igraph::as_edgelist(joint$MSTtree)
-  by_cond <- split(draw_files, sapply(draw_files, function(p) parse_meta(p)$cond))
+joint <- readRDS(joint_file)
+joint_cl_all <- joint$clusterid
+joint_pt <- enframe(joint$pseudotime, name = "cell", value = "pt_joint") %>%
+  distinct(cell, .keep_all = TRUE)
+jedges <- igraph::as_edgelist(joint$MSTtree)
+by_cond <- split(draw_files, sapply(draw_files, function(p) parse_meta(p)$cond))
 
-  set.seed(seed)
-  manifest <- list()
-  edge_rows <- list()
+set.seed(seed)
+manifest <- list()
+edge_rows <- list()
 
-  for (cond in names(by_cond)) {
-    files <- by_cond[[cond]]
-    draws <- lapply(files, readRDS)
-    seeds <- sapply(files, function(p) parse_meta(p)$seed)
-    n_draws <- length(draws)
-    cells_c <- names(draws[[1]]$clusterid)
-    N <- length(cells_c)
-    jcl <- joint_cl_all[cells_c]
+for (cond in names(by_cond)) {
+  files <- by_cond[[cond]]
+  draws <- lapply(files, readRDS)
+  seeds <- sapply(files, function(p) parse_meta(p)$seed)
+  n_draws <- length(draws)
+  cells_c <- names(draws[[1]]$clusterid)
+  N <- length(cells_c)
+  jcl <- joint_cl_all[cells_c]
 
-    for (i in seq_along(draws)) {
-      dr <- draws[[i]]
-      cp <- enframe(dr$pseudotime, name = "cell", value = "pt") %>% distinct(cell, .keep_all = TRUE)
-      tab <- inner_join(cp, joint_pt, by = "cell")
-      manifest[[length(manifest) + 1]] <- tibble(
-        condition = cond, seed = seeds[i],
-        n_clusters = length(unique(dr$clusterid)), pcadim = ncol(dr$pca),
-        rho_joint = cor(tab$pt, tab$pt_joint, method = "spearman"),
-        tot_wss = tot_wss(dr$pca[names(dr$clusterid), , drop = FALSE], dr$clusterid))
-    }
-
-    # joint edge cell-sets (columns) + single-set null cutoffs (Lamian-style)
-    je <- lapply(seq_len(nrow(jedges)), function(i) edge_cells(jcl, jedges[i, 1], jedges[i, 2]))
-    keep <- lengths(je) > 0
-    je <- je[keep]
-    jkeys <- vapply(which(keep), function(i) edge_key(jedges[i, 1], jedges[i, 2]), character(1))
-    js_cut <- vapply(je, function(Sj) quantile(replicate(n_null, jaccard(Sj, sample(cells_c, length(Sj)))), NULL_LEVEL), numeric(1))
-    oc_cut <- vapply(je, function(Sj) quantile(replicate(n_null, overlap(Sj, sample(cells_c, length(Sj)))), NULL_LEVEL), numeric(1))
-
-    # draw edge cell-sets; representative k = median edge count across draws
-    draw_edges <- lapply(draws, function(dr) {
-      de <- igraph::as_edgelist(dr$MSTtree)
-      if (nrow(de) == 0) return(list())
-      lapply(seq_len(nrow(de)), function(r) edge_cells(dr$clusterid, de[r, 1], de[r, 2]))
-    })
-    k_rep <- as.integer(round(median(lengths(draw_edges))))
-    js_bok_cut <- vapply(je, function(Sj) bok_jaccard_cut(length(Sj), N, k_rep), numeric(1))
-
-    # per-draw best-match magnitudes + Lamian detection
-    js_detect <- oc_detect <- matrix(FALSE, n_draws, length(je))
-    best_j <- best_o <- matrix(0, n_draws, length(je))
-    for (d in seq_along(draws)) {
-      es <- draw_edges[[d]]
-      if (!length(es)) next
-      jm <- sapply(je, function(Sj) vapply(es, jaccard, numeric(1), B = Sj))
-      om <- sapply(je, function(Sj) vapply(es, overlap, numeric(1), B = Sj))
-      if (is.null(dim(jm))) { jm <- matrix(jm, nrow = length(es)); om <- matrix(om, nrow = length(es)) }
-      best_j[d, ] <- apply(jm, 2, max); best_o[d, ] <- apply(om, 2, max)
-      js_detect[d, ] <- detected_edges(jm, js_cut)
-      oc_detect[d, ] <- detected_edges(om, oc_cut)
-    }
-
-    # best-of-k calibrated recovery: count of runs above the cutoff (descriptive)
-    # + the worst (least significant) run's exact best-of-k permutation p.
-    n_runs_recovered <- colSums(sweep(best_j, 2, js_bok_cut, `>=`))
-    p_run_worst <- vapply(seq_along(je), function(e) {
-      max(bok_pvalue(best_j[, e], length(je[[e]]), N, k_rep))
-    }, numeric(1))
-
-    js_perc <- colMeans(js_detect); oc_perc <- colMeans(oc_detect)
-    edge_rows[[length(edge_rows) + 1]] <- tibble(
-      condition = cond, edge = jkeys, is_APC = jkeys %in% APC_EDGES,
-      n_joint_cells = lengths(je),
-      jacc_mean = colMeans(best_j), jacc_median = apply(best_j, 2, median), jacc_min = apply(best_j, 2, min),
-      overlap_mean = colMeans(best_o),
-      js_cut = js_cut, oc_cut = oc_cut,
-      js_detect_rate = js_perc, oc_detect_rate = oc_perc,
-      detection_rate = pmin((js_perc + oc_perc) / 2, 1),
-      k_rep = k_rep, js_bok_cut = js_bok_cut,
-      n_runs_recovered = n_runs_recovered, p_run_worst = p_run_worst,
-      n_runs = n_draws)
+  for (i in seq_along(draws)) {
+    dr <- draws[[i]]
+    cp <- enframe(dr$pseudotime, name = "cell", value = "pt") %>% distinct(cell, .keep_all = TRUE)
+    tab <- inner_join(cp, joint_pt, by = "cell")
+    manifest[[length(manifest) + 1]] <- tibble(
+      condition = cond, seed = seeds[i],
+      n_clusters = length(unique(dr$clusterid)), pcadim = ncol(dr$pca),
+      rho_joint = cor(tab$pt, tab$pt_joint, method = "spearman"),
+      tot_wss = tot_wss(dr$pca[names(dr$clusterid), , drop = FALSE], dr$clusterid))
   }
 
-  manifest_tbl <- bind_rows(manifest) %>% arrange(condition, seed)
-  # BH-FDR of the worst-run permutation p across all edge x condition tests
-  edge_tbl <- bind_rows(edge_rows) %>%
-    mutate(p_bh = p.adjust(p_run_worst, "BH")) %>%
-    arrange(condition, desc(is_APC), desc(jacc_mean))
-  list(manifest = manifest_tbl, edges = edge_tbl)
+  # joint edge cell-sets (columns) + single-set null cutoffs (Lamian-style)
+  je <- lapply(seq_len(nrow(jedges)), function(i) edge_cells(jcl, jedges[i, 1], jedges[i, 2]))
+  keep <- lengths(je) > 0
+  je <- je[keep]
+  jkeys <- vapply(which(keep), function(i) edge_key(jedges[i, 1], jedges[i, 2]), character(1))
+  js_cut <- vapply(je, function(Sj) quantile(replicate(n_null, jaccard(Sj, sample(cells_c, length(Sj)))), NULL_LEVEL), numeric(1))
+  oc_cut <- vapply(je, function(Sj) quantile(replicate(n_null, overlap(Sj, sample(cells_c, length(Sj)))), NULL_LEVEL), numeric(1))
+
+  # draw edge cell-sets; representative k = median edge count across draws
+  draw_edges <- lapply(draws, function(dr) {
+    de <- igraph::as_edgelist(dr$MSTtree)
+    if (nrow(de) == 0) return(list())
+    lapply(seq_len(nrow(de)), function(r) edge_cells(dr$clusterid, de[r, 1], de[r, 2]))
+  })
+  k_rep <- as.integer(round(median(lengths(draw_edges))))
+  js_bok_cut <- vapply(je, function(Sj) bok_jaccard_cut(length(Sj), N, k_rep), numeric(1))
+
+  # per-draw best-match magnitudes + Lamian detection
+  js_detect <- oc_detect <- matrix(FALSE, n_draws, length(je))
+  best_j <- best_o <- matrix(0, n_draws, length(je))
+  for (d in seq_along(draws)) {
+    es <- draw_edges[[d]]
+    if (!length(es)) next
+    jm <- sapply(je, function(Sj) vapply(es, jaccard, numeric(1), B = Sj))
+    om <- sapply(je, function(Sj) vapply(es, overlap, numeric(1), B = Sj))
+    if (is.null(dim(jm))) { jm <- matrix(jm, nrow = length(es)); om <- matrix(om, nrow = length(es)) }
+    best_j[d, ] <- apply(jm, 2, max); best_o[d, ] <- apply(om, 2, max)
+    js_detect[d, ] <- detected_edges(jm, js_cut)
+    oc_detect[d, ] <- detected_edges(om, oc_cut)
+  }
+
+  # best-of-k calibrated recovery: count of runs above the cutoff (descriptive)
+  # + the worst (least significant) run's exact best-of-k permutation p.
+  n_runs_recovered <- colSums(sweep(best_j, 2, js_bok_cut, `>=`))
+  p_run_worst <- vapply(seq_along(je), function(e) {
+    max(bok_pvalue(best_j[, e], length(je[[e]]), N, k_rep))
+  }, numeric(1))
+
+  js_perc <- colMeans(js_detect); oc_perc <- colMeans(oc_detect)
+  edge_rows[[length(edge_rows) + 1]] <- tibble(
+    condition = cond, edge = jkeys,
+    n_joint_cells = lengths(je),
+    jacc_mean = colMeans(best_j), jacc_median = apply(best_j, 2, median), jacc_min = apply(best_j, 2, min),
+    overlap_mean = colMeans(best_o),
+    js_cut = js_cut, oc_cut = oc_cut,
+    js_detect_rate = js_perc, oc_detect_rate = oc_perc,
+    detection_rate = pmin((js_perc + oc_perc) / 2, 1),
+    k_rep = k_rep, js_bok_cut = js_bok_cut,
+    n_runs_recovered = n_runs_recovered, p_run_worst = p_run_worst,
+    n_runs = n_draws)
 }
 
-if (exists("snakemake")) {
-  res <- compute_edge_detection(
-    snakemake@input[["joint"]], unlist(snakemake@input[["draws"]]),
-    n_null = snakemake@params[["n_null"]], seed = snakemake@params[["seed"]]
-  )
-  write_csv(res$manifest, snakemake@output[["manifest"]])
-  write_csv(res$edges, snakemake@output[["edges"]])
+manifest_tbl <- bind_rows(manifest) %>% arrange(condition, seed)
+# BH-FDR of the worst-run permutation p across all edge x condition tests
+edge_tbl <- bind_rows(edge_rows) %>%
+  mutate(p_bh = p.adjust(p_run_worst, "BH")) %>%
+  arrange(condition, desc(jacc_mean))
 
-  cat("=== per-draw manifest ===\n"); print(res$manifest, n = Inf, width = Inf)
-  cat("\n=== edge reproducibility (APC first) ===\n")
-  res$edges %>%
-    mutate(across(c(jacc_mean, jacc_median, jacc_min, overlap_mean, js_cut, oc_cut,
-                    js_bok_cut, p_run_worst, p_bh), ~signif(., 3))) %>%
-    print(n = Inf, width = Inf)
-}
+write_csv(manifest_tbl, manifest_out)
+write_csv(edge_tbl, edges_out)
+
+cat("=== per-draw manifest ===\n"); print(manifest_tbl, n = Inf, width = Inf)
+cat("\n=== edge reproducibility ===\n")
+edge_tbl %>%
+  mutate(across(c(jacc_mean, jacc_median, jacc_min, overlap_mean, js_cut, oc_cut,
+                  js_bok_cut, p_run_worst, p_bh), ~signif(., 3))) %>%
+  print(n = Inf, width = Inf)
