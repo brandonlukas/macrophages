@@ -286,15 +286,13 @@ def main():
     obs = adata.obs
     cell_df = pd.DataFrame({"cell": list(comm_dict.keys()),
                             "community": list(comm_dict.values())}).set_index("cell")
-    for col in [args.label_col, "cell_type", "condition", "pseudotime"]:
+    for col in [args.label_col, "condition", "pseudotime"]:
         if col in obs.columns:
             cell_df[col] = obs[col].reindex(cell_df.index)
     cell_df.reset_index().to_csv(f"{args.outdir}/cell_communities.csv", index=False)
 
     if args.label_col in obs.columns:
         overlap_grid(comm_dict, obs[args.label_col]).to_csv(f"{args.outdir}/community_overlap_{args.label_col}.csv")
-    if "cell_type" in obs.columns:
-        overlap_grid(comm_dict, obs["cell_type"]).to_csv(f"{args.outdir}/community_overlap_celltype.csv")
 
     pd.DataFrame([(u, v, d["weight"]) for u, v, d in flowG.edges(data=True)],
                  columns=["u", "v", "weight"]).to_csv(f"{args.outdir}/cluster_flow_edges.csv", index=False)
