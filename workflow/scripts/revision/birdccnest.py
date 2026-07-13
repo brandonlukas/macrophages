@@ -139,7 +139,9 @@ def make_cluster_flow_network(G, comm_dict):
     from collections import defaultdict
     w = defaultdict(int)
     for u, v in G.edges():
-        cu, cv = comm_dict[u], comm_dict[v]
+        cu, cv = comm_dict.get(u), comm_dict.get(v)
+        if cu is None or cv is None:  # cell without a (predefined) cluster label
+            continue
         if cu != cv:
             w[(cu, cv)] += 1
     flowG = nx.DiGraph()
@@ -247,6 +249,9 @@ def main():
     ap.add_argument("--seed", type=int, default=42)
     ap.add_argument("--device", default="cuda")
     ap.add_argument("--label-col", default="clusterid", help="obs column of the reference (Lamian) clusters")
+    ap.add_argument("--cluster-col", default=None,
+                    help="use predefined clusters from this obs column instead of Louvain "
+                         "(e.g. clusterid); builds the flow network + OMST over your clusters")
     ap.add_argument("--from-cache", action="store_true", help="reuse a cached pruned network in --outdir")
     ap.add_argument("--resolution-sweep", default=None,
                     help="comma list of resolutions; reports community counts + coherence, then exits")
@@ -272,9 +277,18 @@ def main():
         print(f"[BIRDccNEST] sweep -> {args.outdir}/resolution_sweep.csv")
         return
 
-    # 4) Louvain communities
-    G, comm_dict, comms = louvain_communities(sparse_adj, names, args.resolution, args.seed)
-    print(f"[BIRDccNEST] Louvain (res={args.resolution}): {len(comms)} communities")
+    # 4) communities: Louvain, OR predefined clusters (skip community detection)
+    if args.cluster_col:
+        G = nx.from_scipy_sparse_array(sparse_adj, create_using=nx.DiGraph)
+        G = nx.relabel_nodes(G, {i: n for i, n in enumerate(names)})
+        lab = adata.obs[args.cluster_col].astype(str).to_dict()
+        comm_dict = {n: lab[n] for n in names if n in lab and lab[n] not in ("nan", "None")}
+        comms = sorted(set(comm_dict.values()))
+        print(f"[BIRDccNEST] predefined clusters from '{args.cluster_col}': "
+              f"{len(comms)} clusters over {len(comm_dict)} cells (Louvain skipped)")
+    else:
+        G, comm_dict, comms = louvain_communities(sparse_adj, names, args.resolution, args.seed)
+        print(f"[BIRDccNEST] Louvain (res={args.resolution}): {len(comms)} communities")
 
     # 5) cluster flow network + 6) OMST
     flowG = make_cluster_flow_network(G, comm_dict)
@@ -303,7 +317,8 @@ def main():
 
     # coherence: BIRDccNEST communities vs reference clusters, on the PCA embedding
     report = {"kept_fraction": kept_frac, "strongly_connected": strong,
-              "n_communities": len(comms), "resolution": args.resolution,
+              "n_communities": len(comms),
+              "cluster_source": args.cluster_col or f"louvain(res={args.resolution})",
               "n_steps": args.n_steps, "seed": args.seed}
     if "X_pca" in adata.obsm:
         emb = np.asarray(adata.obsm["X_pca"])
@@ -321,7 +336,7 @@ def main():
         comm_pt.rename("mean_pseudotime").to_csv(f"{args.outdir}/community_mean_pseudotime.csv")
         report["omst_pt_direction_concordance"] = frac
         # biological root = origin (lowest mean pseudotime); re-orient the backbone from it
-        root = int(comm_pt.idxmin())
+        root = comm_pt.idxmin()
         report["root_community_by_min_pt"] = root
         rooted = root_anchored_orientation(omst, root)
         pd.DataFrame([(u, v, d["weight"]) for u, v, d in rooted.edges(data=True)],
